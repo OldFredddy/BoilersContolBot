@@ -1,0 +1,50 @@
+if a1 <>nil then
+TextFileWriteLn(IntToStr(a1.OriginalAsInt)); // записываем значение, переведенное в строку, если оно не null
+else	
+TextFileWriteLn('null'); // записываем 'null', если значение null
+...
+
+
+
+const INTERVAL = 10; // Интервалтаймеравсекундах
+var
+vrTimer: Integer;
+begin
+ vrTimer := vrTimer + 1; // накапливаем секунды в vrTimer  
+// если прошло больше, чем INTERVAL секунд с последнего срабатывания таймера 
+ if vrTimer>= INTERVAL then
+ begin
+  // КОД РАЗМЕЩЕННЫЙ ЗДЕСЬ БУДЕТ ВЫПОЛНЯТЬСЯ ПО ТАЙМЕРУ 
+  TextFileOpen('C:\actualparams.txt', '', fomRewrite, fcpUTF8); // создаем и открываем файл  
+  TextFileWriteLn(IntToStr(PLC160__t3.OriginalAsInt)); //t подачи кот№1 Склады Мищенко
+  TextFileWriteLn(IntToStr(PLC160__t4.OriginalAsInt));//t обратки
+  TextFileWriteLn(IntToStr(PLC160_PLC_PRG_R_p1.OriginalAsInt));//давление в системе
+  TextFileWriteLn(IntToStr(t_2.OriginalAsInt));//t подачи кот№2 Ендальцев
+  TextFileWriteLn(IntToStr(t_3.OriginalAsInt));//t обратки
+  TextFileWriteLn(IntToStr(p_2.OriginalAsInt));// давление в системе
+  TextFileWriteLn(IntToStr(t.OriginalAsInt));//t подачи кот№3 ЧукотОптТорг
+  TextFileWriteLn(IntToStr(t_1.OriginalAsInt));//t обратки
+  TextFileWriteLn(IntToStr(p.OriginalAsInt));//давление в системе
+  TextFileWriteLn(IntToStr(in1_t1.OriginalAsInt));//t подачи кот№6 офис "СВТ"
+  TextFileWriteLn(IntToStr(in2_t2.OriginalAsInt)); //t обратки
+  TextFileWriteLn(IntToStr(p1_kot6.OriginalAsInt));//давление в системе
+  TextFileWriteLn(IntToStr(t_4.OriginalAsInt));//t подачи кот№7 общежитие на Южной
+  TextFileWriteLn(IntToStr(t_5.OriginalAsInt));//t обратки 
+  TextFileWriteLn(IntToStr(Go_4.OriginalAsInt));//расход м3/ч
+  TextFileWriteLn(IntToStr(T_k1.OriginalAsInt));//t подачи кот№Х офис ЧСБК
+  TextFileWriteLn(IntToStr(T_k2.OriginalAsInt));//t подачи кот№Х общага ЧСБК
+  TextFileWriteLn(IntToStr(t_6.OriginalAsInt));//t подачи кот№Х "ЧСБК Новая"
+  TextFileWriteLn(IntToStr(t_7.OriginalAsInt));//t обратки
+  TextFileWriteLn(IntToStr(P_6.OriginalAsInt));//давление в системе
+  TextFileWriteLn(IntToStr(t_8.OriginalAsInt)); //t подачи кот№Х "Рынок" 
+  TextFileWriteLn(IntToStr(t_9.OriginalAsInt));//t обратки 
+  TextFileWriteLn(IntToStr(P_8.OriginalAsInt));//давление в системе
+  TextFileWriteLn(IntToStr(t_10.OriginalAsInt));//t подачи кот№Х "Д/С Сказка"
+  TextFileWriteLn(IntToStr(t_11.OriginalAsInt));//t обратки
+  TextFileWriteLn(IntToStr(P_pod.OriginalAsInt));//давление в системе
+  TextFileWriteLn(IntToStr(srednee_Ty.OriginalAsInt));//температура на улице
+  TextFileWriteLn(IntToStr(wind.OriginalAsInt));//скорость ветра (База)м/с
+  TextFileClose; // закрываемфайл
+  vrTimer := 0;  
+ end;  
+end.

@@ -45,6 +45,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId("@BoilersAnadyr");
         ActualParams actualParams = new ActualParams(currentDir);
+
         sendMessage.setText(getCurrentParamsText(actualParams,errorsArray));
         sendMessage.setParseMode("Markdown");
         try {
@@ -76,6 +77,11 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                 sendMessage.setText(formattedTime+"\n"+getCurrentParamsText(actualParams,errorsArray));
                 sendMessage.setParseMode("Markdown");
                     Message message = execute(sendMessage);
+                    Thread.sleep(1000);
+                    SendMessage sendMessageTest = new SendMessage();
+                    sendMessageTest.setChatId(clientsId.get(0));
+                    sendMessageTest.setText(boilerManager.getDevAndCurrent());
+                    Message message1 = execute(sendMessageTest);
                     Thread.sleep(1800);
                     DeleteMessage deleteMessage = new DeleteMessage("@BoilersAnadyr",messageId);
                     Thread.sleep(1800);
@@ -90,6 +96,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
             }
         }, 5 * 60 * 1000, 5 * 60 * 1000); // Первое значение - задержка перед первым запуском, второе - интервал между запусками
      }
+   BoilerManager boilerManager = new BoilerManager(12);
     static volatile boolean keepRunning = true;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
      private Integer[] avaryMessageID=new Integer[2];
@@ -144,10 +151,11 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                 }
                 for (int i = 0; i < actualParams2.getTPod().length; i++) {
                     try {
+                        boilerManager.addTemperature(i,Float.parseFloat(actualParams2.getTPod()[i]));
                         if (errorsArray[i]){
                             continue;
                         }
-                        if ((Float.parseFloat(actualParams2.getTPod()[i])>90)&&(!actualParams2.getPVx()[i].equals("-1000"))) {
+                        if ((boilerManager.isTemperatureAnomaly(i,Float.parseFloat(actualParams2.getTPod()[i])))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
                             try {
                                 sendAttention(i, "Проблема в температуре подачи!");
                                 Thread.sleep(2000);
@@ -375,7 +383,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
-        return "your_token";
+        return "5877039413:AAHRROOH1edVrqu6MlYOjMnrek5QuGFEejo";
     }
 
     public SendMessage startKeyboard(String chatId) {

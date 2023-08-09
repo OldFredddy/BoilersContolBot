@@ -383,7 +383,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
-        return "5877039413:AAHRROOH1edVrqu6MlYOjMnrek5QuGFEejo";
+        return "your_token";
     }
 
     public SendMessage startKeyboard(String chatId) {

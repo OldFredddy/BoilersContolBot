@@ -78,10 +78,10 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                 sendMessage.setParseMode("Markdown");
                     Message message = execute(sendMessage);
                     Thread.sleep(1000);
-                    SendMessage sendMessageTest = new SendMessage();
-                    sendMessageTest.setChatId(clientsId.get(0));
-                    sendMessageTest.setText(boilerManager.getDevAndCurrent());
-                    Message message1 = execute(sendMessageTest);
+                  // SendMessage sendMessageTest = new SendMessage();
+                  // sendMessageTest.setChatId(clientsId.get(0));
+                  // sendMessageTest.setText(boilerManager.getDevAndCurrent());
+                  // Message message1 = execute(sendMessageTest);
                     Thread.sleep(1800);
                     DeleteMessage deleteMessage = new DeleteMessage("@BoilersAnadyr",messageId);
                     Thread.sleep(1800);
@@ -287,6 +287,10 @@ public class MyAmazingBot extends TelegramLongPollingBot {
             avaryMessageID[i] = message.getMessageId();
             Message message2 = execute(avaryKeyboard(String.valueOf(clientsId.get(i))));
             avary3MessageID[i]= message2.getMessageId();
+            SendMessage sendMessageTest = new SendMessage();
+            sendMessageTest.setChatId(clientsId.get(0));
+            sendMessageTest.setText(boilerManager.getDevAndCurrent());
+            Message message3 = execute(sendMessageTest);
             // Возвращаемся к предыдущему экрану клавиатуры
 
         }

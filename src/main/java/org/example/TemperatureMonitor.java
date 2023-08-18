@@ -10,6 +10,7 @@ public class TemperatureMonitor {
     private double sum;
     private double sumLast1200=0;
 
+
     public TemperatureMonitor() {
         this.temperatures = new LinkedList<>();
         this.sum = 0;
@@ -21,6 +22,7 @@ public class TemperatureMonitor {
         sum += temp;
         if (temperatures.size() > FOUR_HOURS) {
             sum -= temperatures.removeFirst();
+            sumLast1200-= temperatures.get(1199);
         }
 
     }

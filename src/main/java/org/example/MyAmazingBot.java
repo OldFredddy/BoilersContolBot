@@ -78,10 +78,12 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                 sendMessage.setParseMode("Markdown");
                     Message message = execute(sendMessage);
                     Thread.sleep(1000);
+
                   // SendMessage sendMessageTest = new SendMessage();
                   // sendMessageTest.setChatId(clientsId.get(0));
                   // sendMessageTest.setText(boilerManager.getDevAndCurrent());
                   // Message message1 = execute(sendMessageTest);
+
                     Thread.sleep(1800);
                     DeleteMessage deleteMessage = new DeleteMessage("@BoilersAnadyr",messageId);
                     Thread.sleep(1800);
@@ -387,7 +389,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
-        return "your_token";
+        return "your token";
     }
 
     public SendMessage startKeyboard(String chatId) {

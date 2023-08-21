@@ -3,66 +3,41 @@ package org.example;
 import java.util.LinkedList;
 
 public class TemperatureMonitor {
-    private static final int FOUR_HOURS = 2400;
-    private static final int TWO_HOUR = 1200;
-
     private LinkedList<Double> temperatures;
-    private double sum;
-    private double sumLast1200=0;
-
-
     public TemperatureMonitor() {
         this.temperatures = new LinkedList<>();
-        this.sum = 0;
 
     }
-
-    public void addTemperature(double temp) {
-        temperatures.add(temp);
-        sum += temp;
-        if (temperatures.size() > FOUR_HOURS) {
-            sum -= temperatures.removeFirst();
-            sumLast1200-= temperatures.get(1199);
+    private static final int[] tPlanArray = {
+            94, 94, 94, 94, 94, 94, 94, 94, 94, 94,
+            94, 93, 92, 91, 90, 89, 88, 87, 86, 85,
+            84, 82, 81, 80, 79, 78, 77, 76, 75, 74,
+            73, 72, 71, 69, 68, 67, 66, 65, 64, 63,
+            62, 60, 59, 58, 57, 56, 55, 53, 52, 51,
+            50, 48, 47, 46, 45, 43, 42, 41, 40, 40,
+            40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+            40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+            40
+    };
+    private static final int[] tGrad = new int[81];
+    public boolean isTemperatureAnomaly(double currentTemp, double tStreet,int numberOfBoiler) {
+        for (int i = 0; i < 81; i++) {
+            tGrad[i] = i - 51;
         }
-
-    }
-
-    private double getAverage() {
-        sumLast1200=0;
-        for (int i = 0; i < 1199; i++) {
-            sumLast1200+=temperatures.get(i);
+        int tPlan=50;
+        for (int i = 0; i < 81; i++) {
+            if (Math.round(tStreet) == tGrad[i]) {
+                tPlan = tPlanArray[i];
+                break;
+            }
         }
-        if (temperatures.size()==0){
-            return 0;
+        if (tStreet < -50) {
+            tPlan = 50;
         }
-        if (temperatures.size() <= TWO_HOUR) {
-            return sum / temperatures.size();
-        } else {
-            return sumLast1200 / (TWO_HOUR);
+        if ((numberOfBoiler==4)||(numberOfBoiler==5)||(numberOfBoiler==6)){
+            tPlan+=8;
         }
+        return currentTemp < (tPlan - 8) || currentTemp > (tPlan + 8);
     }
 
-    public double getStandardDeviation(double mean) {
-        double variance = 0;
-        int count = 0;
-        for (int i = 0; i < TWO_HOUR; i++) {
-            variance += Math.pow(temperatures.get(i) - mean, 2);
-            count++;
-        }
-        return Math.sqrt(variance / count);
-    }
-
-    public boolean isTemperatureAnomaly(double currentTemp) {
-        double average = getAverage();
-        double stdDev = getStandardDeviation(average);
-
-        return currentTemp < (average - 3 * stdDev) || currentTemp > (average + 3 * stdDev);
-    }
-    public String getStandardDeviationTest() {
-        double average = getAverage();
-        double stdDev1 = getStandardDeviation(average);
-        String result= String.valueOf(average);
-        result+=", "+String.valueOf(stdDev1);
-        return result;
-    }
 }

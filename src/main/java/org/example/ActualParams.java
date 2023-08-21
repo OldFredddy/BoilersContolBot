@@ -14,8 +14,8 @@ public class ActualParams {
     private String[] tObr = new String[12];
     private String[] pVx = new String[12];
     private String[] tStreet = new String[12];
-    public Float[] normalPvxHigh={0.45f, 0.45f, 0.35f, 0.45f, 0.150f, 6.0f, 0.45f, 0.44f, 0.45f, 0.45f, 0.45f, 0.45f};
-    public Float[] normalPvxLow= {0.35f, 0.15f, 0.23f, 0.31f, 0.011f, 1.0f, 0.02f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f};
+    public Float[] normalPvxHigh={0.42f, 0.45f, 0.45f, 0.45f, 0.150f, 6.0f, 0.45f, 0.44f, 0.45f, 0.45f, 0.45f, 0.45f};
+    public Float[] normalPvxLow= {0.32f, 0.15f, 0.23f, 0.31f, 0.011f, 1.0f, 0.02f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f};
     private String wind;
 
     private List<String> actualParametrs=new ArrayList<>();

@@ -153,11 +153,10 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                 }
                 for (int i = 0; i < actualParams2.getTPod().length; i++) {
                     try {
-                        boilerManager.addTemperature(i,Float.parseFloat(actualParams2.getTPod()[i]));
                         if (errorsArray[i]){
                             continue;
                         }
-                        if ((boilerManager.isTemperatureAnomaly(i,Float.parseFloat(actualParams2.getTPod()[i])))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
+                        if ((boilerManager.isTemperatureAnomaly(i,Float.parseFloat(actualParams2.getTPod()[i]),Float.parseFloat(actualParams2.getTStreet()[i])))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
                             try {
                                 sendAttention(i, "Проблема в температуре подачи!");
                                 Thread.sleep(2000);
@@ -289,10 +288,6 @@ public class MyAmazingBot extends TelegramLongPollingBot {
             avaryMessageID[i] = message.getMessageId();
             Message message2 = execute(avaryKeyboard(String.valueOf(clientsId.get(i))));
             avary3MessageID[i]= message2.getMessageId();
-            SendMessage sendMessageTest = new SendMessage();
-            sendMessageTest.setChatId(clientsId.get(0));
-            sendMessageTest.setText(boilerManager.getDevAndCurrent());
-            Message message3 = execute(sendMessageTest);
             // Возвращаемся к предыдущему экрану клавиатуры
 
         }
@@ -389,7 +384,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
-        return "your token";
+        return "your_token";
     }
 
     public SendMessage startKeyboard(String chatId) {

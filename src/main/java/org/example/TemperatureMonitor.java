@@ -35,9 +35,18 @@ public class TemperatureMonitor {
             tPlan = 50;
         }
         if ((numberOfBoiler==4)||(numberOfBoiler==5)||(numberOfBoiler==6)){
-            tPlan+=8;
+            tPlan=50;
         }
-        return currentTemp < (tPlan - 8) || currentTemp > (tPlan + 8);
+        if ((numberOfBoiler==3)){
+            tPlan=46;
+        }
+        if ((numberOfBoiler==8)){
+            tPlan=55;
+        }
+        if ((numberOfBoiler==11)){
+            tPlan=44;
+        }
+        return currentTemp < (tPlan - 9) || currentTemp > (tPlan + 9);
     }
 
 }

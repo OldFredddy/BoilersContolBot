@@ -13,12 +13,13 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws TelegramApiException, IOException {
+
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        // Register our bot
         try {
             botsApi.registerBot(new MyAmazingBot());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
     }
 }

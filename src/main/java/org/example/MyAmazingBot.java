@@ -21,8 +21,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import parcers.OpenWeatherMapJsonParser;
-import parcers.WeatherParser;
 import com.theokanning.openai.service.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.image.CreateImageRequest;
@@ -45,7 +43,8 @@ public class MyAmazingBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId("@BoilersAnadyr");
         ActualParams actualParams = new ActualParams(currentDir);
-
+        String[] hangTpod={"-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-2"};
+        String[] hangTpodNew={"-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3"};
         sendMessage.setText(getCurrentParamsText(actualParams,errorsArray));
         sendMessage.setParseMode("Markdown");
         try {
@@ -74,6 +73,9 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                     actualParams = new ActualParams(currentDir);
                     LocalTime currentTime = LocalTime.now();
                     String formattedTime = currentTime.format(formatter);
+                    for (int i = 0; i < 11; i++) {
+                        hangTpodNew[i]=actualParams.getTPod()[i];
+                    }
                 sendMessage.setText(formattedTime+"\n"+getCurrentParamsText(actualParams,errorsArray));
                 sendMessage.setParseMode("Markdown");
                     Message message = execute(sendMessage);
@@ -90,8 +92,16 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                     messageId = message.getMessageId();
                     Thread.sleep(1800);
                     execute(deleteMessage);
-
+                    for (int i = 0; i < 11; i++) {
+                        if (hangTpodNew[i]==hangTpod[i]){
+                            sendAttention(i, "Зависание! За пять минут значение не изменилось!");
+                        }
+                    }
+                    for (int i = 0; i < 11; i++) {
+                       hangTpod[i]=hangTpodNew[i];
+                    }
                     Thread.sleep(1800);
+                    //TODO Сюда добавить проверку на отуствие связи, такс на 5 минут!
                 } catch (TelegramApiException | InterruptedException |IOException e) {
 
                 }
@@ -292,7 +302,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
 
         }
     }
-    private WeatherParser weatherParser=new OpenWeatherMapJsonParser();
+
 
     public String[] boilerNames = {
             "Котельная «Склады Мищенко»",                   //t улицы кот№1 Склады Мищенко

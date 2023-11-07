@@ -18,7 +18,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.example.Main</mainClass>
+                  <mainClass>org.example.GUIStarter</mainClass>
                   <manifestEntries>
                     <Multi-Release>true</Multi-Release>
                   </manifestEntries>
@@ -30,9 +30,32 @@
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots />
+      <id>ias-snapshots</id>
+      <name>Infinite Automation Snapshot Repository</name>
+      <url>https://maven.mangoautomation.net/repository/ias-snapshot/</url>
+    </repository>
+    <repository>
+      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>ias-releases</id>
+      <name>Infinite Automation Release Repository</name>
+      <url>https://maven.mangoautomation.net/repository/ias-release/</url>
+    </repository>
+  </repositories>
   <properties>
-    <maven.compiler.target>19</maven.compiler.target>
+    <main.class>org.example.GUIStarter</main.class>
     <maven.compiler.source>19</maven.compiler.source>
+    <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+    <maven.compiler.target>19</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>19</javafx.version>
   </properties>
 </project>

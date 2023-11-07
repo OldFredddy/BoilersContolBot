@@ -20,7 +20,7 @@ public class TemperatureMonitor {
             40
     };
     private static final int[] tGrad = new int[81];
-    public boolean isTemperatureAnomaly(double currentTemp, double tStreet,int numberOfBoiler) {
+    public boolean isTemperatureAnomaly(double currentTemp, double tStreet,int numberOfBoiler, int[] fixedTpod) {
         for (int i = 0; i < 81; i++) {
             tGrad[i] = i - 51;
         }
@@ -47,12 +47,13 @@ public class TemperatureMonitor {
             tPlan=63;
         }
         if ((numberOfBoiler==8)){
-            tPlan=55;
+            tPlan=60;
         }
-        if ((numberOfBoiler==11)){
-            tPlan=44;
+        if (fixedTpod[numberOfBoiler]!=-1) {
+            tPlan=fixedTpod[numberOfBoiler];
         }
-        return currentTemp < (tPlan - 12) || currentTemp > (tPlan + 12);
+            tPlan-=5;
+            return currentTemp < (tPlan - 12) || currentTemp > (tPlan + 12);
     }
 
 }

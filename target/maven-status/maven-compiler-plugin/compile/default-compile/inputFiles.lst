@@ -1,7 +1,13 @@
-C:\Java_less\BoilerControlBot\src\main\java\org\example\Main.java
-C:\Java_less\BoilerControlBot\src\main\java\parcers\OpenWeatherMapJsonParser.java
-C:\Java_less\BoilerControlBot\src\main\java\parcers\WeatherParser.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\GudimBot.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\AppData.java
 C:\Java_less\BoilerControlBot\src\main\java\org\example\ActualParams.java
 C:\Java_less\BoilerControlBot\src\main\java\org\example\MyAmazingBot.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\Javafx.java
 C:\Java_less\BoilerControlBot\src\main\java\org\example\TemperatureMonitor.java
 C:\Java_less\BoilerControlBot\src\main\java\org\example\BoilerManager.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\Controller.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\GudimParamsParser.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\ZvonokPostService.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\GUIStarter.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\DataIO.java
+C:\Java_less\BoilerControlBot\src\main\java\org\example\ModbusServer.java

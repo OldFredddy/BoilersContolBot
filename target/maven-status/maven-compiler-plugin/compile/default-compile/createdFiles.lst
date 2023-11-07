@@ -1,2 +1,9 @@
-org\example\TemperatureMonitor.class
+org\example\GudimBot.class
+org\example\GudimBot$1.class
+org\example\Controller.class
+org\example\ModbusServer.class
+org\example\GudimParamsParser.class
+org\example\GUIStarter.class
 org\example\BoilerManager.class
+org\example\Javafx.class
+org\example\TemperatureMonitor.class

@@ -5,6 +5,15 @@ package org.example;
         private int[] pressures;
         private float[] ppodHigh;
         private float[] ppodLow;
+        private int[] correctForScada;
+        public int[] getCorrectForScada() {
+            return correctForScada;
+        }
+        public void setCorrectForScada(int[] correctForScada) {
+            this.correctForScada = correctForScada;
+        }
+
+
         public int[] getTemperatures() {
             return temperatures;
         }

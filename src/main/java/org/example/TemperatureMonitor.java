@@ -1,6 +1,9 @@
 package org.example;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class TemperatureMonitor {
     private LinkedList<Double> temperatures;
@@ -8,51 +11,45 @@ public class TemperatureMonitor {
         this.temperatures = new LinkedList<>();
 
     }
-    private static final int[] tPlanArray = {
-            94, 94, 94, 94, 94, 94, 94, 94, 94, 94,
-            94, 93, 92, 91, 90, 89, 88, 87, 86, 85,
-            84, 82, 81, 80, 79, 78, 77, 76, 75, 74,
-            73, 72, 71, 69, 68, 67, 66, 65, 64, 63,
-            62, 60, 59, 58, 57, 56, 55, 53, 52, 51,
-            50, 48, 47, 46, 45, 43, 42, 41, 40, 40,
-            40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
-            40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
-            40
+    public String[] boilerNames = {
+            "Котельная «Склады Мищенко»",                   //0   кот№1 Склады Мищенко
+            "Котельная «Выставка Ендальцева»",              //1   кот№2 Ендальцев         (датчик на базе)
+            "Котельная «ЧукотОптТорг»",                     //2   кот№3 ЧукотОптТорг      (датчик на базе)
+            "Котельная «ЧСБК новая»",                       //3   кот№4 "ЧСБК Новая"
+            "Котельная «Офис СВТ»",                         //4   кот№5 офис "СВТ"
+            "Котельная «Общежитие на Южной»",               //5   кот№6 общежитие на Южной
+            "Котельная «Офис ЧСБК»",                        //6   кот№7 офис ЧСБК
+            "Котельная «Рынок»",                            //7   кот№8 "Рынок"
+            "Котельная «Макатровых»",                       //8   кот№9 Макатровых
+            "Котельная ДС «Сказка»",                        //9   кот№10  "Д/С Сказка"
+            "Котельная «Полярный»",                         //10  кот№11 Полярный
+            "Котельная «Департамент»",                      //11  кот№12 Департамент
+            "Котельная «Офис ЧСБК квартиры»",               //12  кот№13 квартиры в офисе
+            "Котельная Шишкина"                             //13  кот№14 ТО Шишкина
     };
+    int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
+
     private static final int[] tGrad = new int[81];
-    public boolean isTemperatureAnomaly(double currentTemp, double tStreet,int numberOfBoiler, int[] fixedTpod) {
+    public boolean isTemperatureAnomaly(double currentTemp, double tStreet,int numberOfBoiler, int[] fixedTpod,
+                                        int[] correctTplan) {
+        int correct = 0;
+        for (int i = 0; i < boilerCompTable.length; i++) {
+            if (boilerCompTable[i]==numberOfBoiler){
+                correct=correctTplan[i];
+            }
+        }
         for (int i = 0; i < 81; i++) {
             tGrad[i] = i - 51;
         }
-        int tPlan=50;
-        for (int i = 0; i < 81; i++) {
-            if (Math.round(tStreet) == tGrad[i]) {
-                tPlan = tPlanArray[i];
-                break;
-            }
-        }
+        double tPlan=tStreet*tStreet*0.00886-0.803*tStreet+54;
         if (tStreet < -50) {
             tPlan = 50;
-        }
-        if ((numberOfBoiler==4)||(numberOfBoiler==5)||(numberOfBoiler==6)){
-            tPlan=50;
-        }
-        if ((numberOfBoiler==2)){
-            tPlan=48;
-        }
-        if ((numberOfBoiler==2)){
-            tPlan=50;
-        }
-        if ((numberOfBoiler==3)){
-            tPlan=63;
-        }
-        if ((numberOfBoiler==8)){
-            tPlan=60;
         }
         if (fixedTpod[numberOfBoiler]!=-1) {
             tPlan=fixedTpod[numberOfBoiler];
         }
             tPlan-=5;
+            tPlan+=correct;
             return currentTemp < (tPlan - 12) || currentTemp > (tPlan + 12);
     }
 

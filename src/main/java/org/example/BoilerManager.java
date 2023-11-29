@@ -17,9 +17,10 @@ public class BoilerManager {
     }
 
 
-    public boolean isTemperatureAnomaly(int boilerIndex, double currentTemp,double tStreet, int[] fixedTpod) {
+    public boolean isTemperatureAnomaly(int boilerIndex, double currentTemp,double tStreet, int[] fixedTpod,
+                                        int[] correctTplan) {
         if (boilerIndex >= 0 && boilerIndex < boilerMonitors.size()) {
-            return boilerMonitors.get(boilerIndex).isTemperatureAnomaly(currentTemp,tStreet,boilerIndex,  fixedTpod);
+            return boilerMonitors.get(boilerIndex).isTemperatureAnomaly(currentTemp,tStreet,boilerIndex,fixedTpod,correctTplan);
         } else {
             return false;
         }

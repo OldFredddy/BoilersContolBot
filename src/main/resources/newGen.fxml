@@ -46,7 +46,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="vbMenu" prefHeight="873.0" prefWidth="987.0" style="-fx-background-color: #2b5278;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller">
+<VBox fx:id="vbMenu" prefHeight="909.0" prefWidth="987.0" style="-fx-background-color: #2b5278;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller">
   <children>
     <HBox id="HBox" alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="1575.0" spacing="5.0" VBox.vgrow="NEVER">
       <children>
@@ -56,16 +56,16 @@
         <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
       </padding>
     </HBox>
-<AnchorPane id="Content" fx:id="myPane" minHeight="-1.0" minWidth="-1.0" prefHeight="817.0" prefWidth="987.0">
+<AnchorPane id="Content" fx:id="myPane" minHeight="-1.0" minWidth="-1.0" prefHeight="891.0" prefWidth="987.0">
   <children>
-            <Button fx:id="startButton" layoutX="230.0" layoutY="570.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Start" textFill="#5484bc">
+            <Button fx:id="startButton" layoutX="230.0" layoutY="609.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Start" textFill="#5484bc">
                <font>
                   <Font size="19.0" />
                </font>
             </Button>
             <TextField fx:id="fieldTpod11" layoutX="208.0" layoutY="438.0" />
             <TextField fx:id="fieldTpod12" layoutX="208.0" layoutY="478.0" />
-            <Button fx:id="stopButton" layoutX="444.0" layoutY="570.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Stop" textFill="#d05050">
+            <Button fx:id="stopButton" layoutX="444.0" layoutY="609.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Stop" textFill="#d05050">
                <font>
                   <Font size="19.0" />
                </font>
@@ -362,129 +362,129 @@
                   </Lighting>
                </effect>
             </Button>
-            <Button fx:id="startButtonGudim" layoutX="222.0" layoutY="798.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Start" textFill="#5484bc">
+            <Button fx:id="startButtonGudim" layoutX="222.0" layoutY="829.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Start" textFill="#5484bc">
                <font>
                   <Font size="19.0" />
                </font>
             </Button>
-            <Button fx:id="stopButtonGudim" layoutX="476.0" layoutY="798.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Stop" textFill="#d05050">
+            <Button fx:id="stopButtonGudim" layoutX="476.0" layoutY="829.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="105.0" style="-fx-background-color: #0e1621;" text="Stop" textFill="#d05050">
                <font>
                   <Font size="19.0" />
                </font>
             </Button>
-            <Label layoutX="18.0" layoutY="668.0" text="Гудым" textFill="WHITE">
+            <Label layoutX="18.0" layoutY="699.0" text="Гудым" textFill="WHITE">
                <font>
                   <Font size="31.0" />
                </font>
             </Label>
-            <Label layoutX="-3.0" layoutY="633.0" text="---------------------------------------------------------------------------" textFill="WHITE">
+            <Label layoutX="-3.0" layoutY="664.0" text="---------------------------------------------------------------------------" textFill="WHITE">
                <font>
                   <Font size="33.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldTpodGorGHigh" layoutX="192.0" layoutY="693.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="153.0" layoutY="665.0" text="Температура подачи воды в город" textFill="WHITE">
+            <TextField fx:id="fieldTpodGorGHigh" layoutX="192.0" layoutY="724.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="153.0" layoutY="696.0" text="Температура подачи воды в город" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldTpodGorGLow" layoutX="310.0" layoutY="693.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="180.0" layoutY="686.0" text="↑" textFill="WHITE">
+            <TextField fx:id="fieldTpodGorGLow" layoutX="310.0" layoutY="724.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="180.0" layoutY="718.0" text="↑" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="298.0" layoutY="688.0" text="↓" textFill="WHITE">
+            <Label layoutX="298.0" layoutY="719.0" text="↓" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldGoGHigh" layoutX="192.0" layoutY="756.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="219.0" layoutY="728.0" text="Норма расхода" textFill="WHITE">
+            <TextField fx:id="fieldGoGHigh" layoutX="192.0" layoutY="787.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="219.0" layoutY="759.0" text="Норма расхода" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldGoGLow" layoutX="310.0" layoutY="756.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="180.0" layoutY="749.0" text="↑" textFill="WHITE">
+            <TextField fx:id="fieldGoGLow" layoutX="310.0" layoutY="787.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="180.0" layoutY="781.0" text="↑" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="298.0" layoutY="751.0" text="↓" textFill="WHITE">
+            <Label layoutX="298.0" layoutY="783.0" text="↓" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldTpodSk1GHigh" layoutX="447.0" layoutY="694.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="442.0" layoutY="666.0" text="Температура скважина 1" textFill="WHITE">
+            <TextField fx:id="fieldTpodSk1GHigh" layoutX="447.0" layoutY="725.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="442.0" layoutY="697.0" text="Температура скважина 1" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldTpodSk1GLow" layoutX="565.0" layoutY="694.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="435.0" layoutY="687.0" text="↑" textFill="WHITE">
+            <TextField fx:id="fieldTpodSk1GLow" layoutX="565.0" layoutY="725.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="435.0" layoutY="720.0" text="↑" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="554.0" layoutY="689.0" text="↓" textFill="WHITE">
+            <Label layoutX="554.0" layoutY="722.0" text="↓" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldPpodSk1GHigh" layoutX="446.0" layoutY="755.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="452.0" layoutY="726.0" text="Давление скважина 1" textFill="WHITE">
+            <TextField fx:id="fieldPpodSk1GHigh" layoutX="446.0" layoutY="786.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="452.0" layoutY="757.0" text="Давление скважина 1" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldPpodSk1GLow" layoutX="564.0" layoutY="755.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="434.0" layoutY="748.0" text="↑" textFill="WHITE">
+            <TextField fx:id="fieldPpodSk1GLow" layoutX="564.0" layoutY="786.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="434.0" layoutY="781.0" text="↑" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="553.0" layoutY="750.0" text="↓" textFill="WHITE">
+            <Label layoutX="553.0" layoutY="783.0" text="↓" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldTpodSk2GHigh" layoutX="712.0" layoutY="696.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="706.0" layoutY="668.0" text="Температура скважина 2" textFill="WHITE">
+            <TextField fx:id="fieldTpodSk2GHigh" layoutX="712.0" layoutY="727.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="706.0" layoutY="699.0" text="Температура скважина 2" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldTpodSk2GLow" layoutX="830.0" layoutY="696.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="700.0" layoutY="689.0" text="↑" textFill="WHITE">
+            <TextField fx:id="fieldTpodSk2GLow" layoutX="830.0" layoutY="727.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="700.0" layoutY="722.0" text="↑" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="819.0" layoutY="691.0" text="↓" textFill="WHITE">
+            <Label layoutX="819.0" layoutY="724.0" text="↓" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="4.0" layoutY="594.0" text="Анадырь" textFill="WHITE">
+            <Label layoutX="4.0" layoutY="633.0" text="Анадырь" textFill="WHITE">
                <font>
                   <Font size="31.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldPpodSk2GHigh" layoutX="712.0" layoutY="755.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="717.0" layoutY="728.0" text="Давление скважина 2" textFill="WHITE">
+            <TextField fx:id="fieldPpodSk2GHigh" layoutX="712.0" layoutY="786.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="717.0" layoutY="759.0" text="Давление скважина 2" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="fieldPpodSk2GLow" layoutX="830.0" layoutY="755.0" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="700.0" layoutY="748.0" text="↑" textFill="WHITE">
+            <TextField fx:id="fieldPpodSk2GLow" layoutX="830.0" layoutY="786.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="700.0" layoutY="781.0" text="↑" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
             </Label>
-            <Label layoutX="819.0" layoutY="750.0" text="↓" textFill="WHITE">
+            <Label layoutX="819.0" layoutY="783.0" text="↓" textFill="WHITE">
                <font>
                   <Font size="25.0" />
                </font>
@@ -621,12 +621,12 @@
                   <Font size="25.0" />
                </font>
             </Label>
-            <CheckBox fx:id="modBusCheck" layoutX="582.0" layoutY="571.0" mnemonicParsing="false" text="ModBus TCP/IP" textFill="WHITE">
+            <CheckBox fx:id="modBusCheck" layoutX="582.0" layoutY="610.0" mnemonicParsing="false" text="ModBus TCP/IP" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </CheckBox>
-            <CheckBox fx:id="scadaImportCheck" layoutX="582.0" layoutY="600.0" mnemonicParsing="false" selected="true" text="TXT SCADA import" textFill="WHITE">
+            <CheckBox fx:id="scadaImportCheck" layoutX="582.0" layoutY="639.0" mnemonicParsing="false" selected="true" text="TXT SCADA import" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
@@ -694,6 +694,39 @@
                   </Lighting>
                </effect>
             </Button>
+            <TextField fx:id="fieldTpod14" layoutX="208.0" layoutY="561.0" />
+            <CheckBox fx:id="checkTplan14" layoutX="581.0" layoutY="562.0" mnemonicParsing="false" selected="true">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </CheckBox>
+            <Label layoutX="170.0" layoutY="562.0" text="№14" textFill="WHITE">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="611.0" layoutY="564.0" text="№14 Квартиры в офисе" textFill="WHITE">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextField fx:id="fieldPpod14High" layoutX="420.0" layoutY="560.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="376.0" layoutY="563.0" text="№14" textFill="WHITE">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextField fx:id="fieldPpod14Low" layoutX="508.0" layoutY="560.0" prefHeight="25.0" prefWidth="50.0" />
+            <Label layoutX="496.0" layoutY="555.0" text="↓" textFill="WHITE">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Label>
+            <Label layoutX="409.0" layoutY="554.0" text="↑" textFill="WHITE">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Label>
   </children>
 </AnchorPane>
   </children>

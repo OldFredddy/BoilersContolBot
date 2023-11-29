@@ -153,7 +153,11 @@ public class Controller {
 
     @FXML
     private TextField fieldPpod7Low;
+    @FXML
+    private TextField fieldPpod14High;
 
+    @FXML
+    private TextField fieldPpod14Low;
     @FXML
     private TextField fieldPpod8High;
 
@@ -215,7 +219,8 @@ public class Controller {
 
     @FXML
     private TextField fieldTpod9;
-
+    @FXML
+    private TextField fieldTpod14;
     @FXML
     private TextField fieldTpodGorGHigh;
 
@@ -257,13 +262,13 @@ public class Controller {
 
     @FXML
     private VBox vbMenu;
-    private int[] fixedTpod ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    private int[] fixedTpod ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     private float[] fixedParamsGudim ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-    private float[] fixedPpodHigh ={-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f};
-    private float[] fixedPpodLow ={-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f};
+    private float[] fixedPpodHigh ={-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f};
+    private float[] fixedPpodLow ={-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f};
     private MyAmazingBot botBoilers;
     private GudimBot botGudim;
-    private AppData data;
+    public AppData data;
     private String readDataMode;
     @FXML
     void initialize() throws IIOException, TelegramApiException {
@@ -292,6 +297,7 @@ public class Controller {
            fieldTpod11.setText(String.valueOf(fixedTpod[10]));     fieldPpod11High.setText(String.valueOf(fixedPpodHigh[10]));    fieldPpod11Low.setText(String.valueOf(fixedPpodLow[10]));
            fieldTpod12.setText(String.valueOf(fixedTpod[11]));     fieldPpod12High.setText(String.valueOf(fixedPpodHigh[11]));    fieldPpod12Low.setText(String.valueOf(fixedPpodLow[11]));
            fieldTpod13.setText(String.valueOf(fixedTpod[12]));     fieldPpod13High.setText(String.valueOf(fixedPpodHigh[12]));    fieldPpod13Low.setText(String.valueOf(fixedPpodLow[12]));
+           fieldTpod14.setText(String.valueOf(fixedTpod[13]));     fieldPpod14High.setText(String.valueOf(fixedPpodHigh[13]));    fieldPpod14Low.setText(String.valueOf(fixedPpodLow[13]));
         } catch (IOException e) {
             data = new AppData();
         }
@@ -320,20 +326,22 @@ public class Controller {
             if (fieldTpod11.getText().equals("")){ fieldTpod11.setText("-1");} if (fieldPpod11High.getText().equals("")){ fieldPpod11High.setText("-1");} if (fieldPpod11Low.getText().equals("")){ fieldPpod11Low.setText("-1");}
             if (fieldTpod12.getText().equals("")){ fieldTpod12.setText("-1");} if (fieldPpod12High.getText().equals("")){ fieldPpod12High.setText("-1");} if (fieldPpod12Low.getText().equals("")){ fieldPpod12Low.setText("-1");}
             if (fieldTpod13.getText().equals("")){ fieldTpod13.setText("-1");} if (fieldPpod13High.getText().equals("")){ fieldPpod13High.setText("-1");} if (fieldPpod13Low.getText().equals("")){ fieldPpod13Low.setText("-1");}
+            if (fieldTpod14.getText().equals("")){ fieldTpod13.setText("-1");} if (fieldPpod14High.getText().equals("")){ fieldPpod14High.setText("-1");} if (fieldPpod14Low.getText().equals("")){ fieldPpod14Low.setText("-1");}
 
-            fixedTpod[0]=Integer.parseInt(fieldTpod1.getText());      fixedPpodHigh[0]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[0]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[1]=Integer.parseInt(fieldTpod2.getText());      fixedPpodHigh[1]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[1]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[2]=Integer.parseInt(fieldTpod3.getText());      fixedPpodHigh[2]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[2]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[3]=Integer.parseInt(fieldTpod4.getText());      fixedPpodHigh[3]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[3]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[4]=Integer.parseInt(fieldTpod5.getText());      fixedPpodHigh[4]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[4]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[5]=Integer.parseInt(fieldTpod6.getText());      fixedPpodHigh[5]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[5]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[6]=Integer.parseInt(fieldTpod7.getText());      fixedPpodHigh[6]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[6]=Float.parseFloat(fieldPpod9Low.getText());
-            fixedTpod[7]=Integer.parseInt(fieldTpod8.getText());      fixedPpodHigh[7]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[7]=Float.parseFloat(fieldPpod9Low.getText());
+            fixedTpod[0]=Integer.parseInt(fieldTpod1.getText());      fixedPpodHigh[0]=Float.parseFloat(fieldPpod1High.getText());        fixedPpodLow[0]=Float.parseFloat(fieldPpod1Low.getText());
+            fixedTpod[1]=Integer.parseInt(fieldTpod2.getText());      fixedPpodHigh[1]=Float.parseFloat(fieldPpod2High.getText());        fixedPpodLow[1]=Float.parseFloat(fieldPpod2Low.getText());
+            fixedTpod[2]=Integer.parseInt(fieldTpod3.getText());      fixedPpodHigh[2]=Float.parseFloat(fieldPpod3High.getText());        fixedPpodLow[2]=Float.parseFloat(fieldPpod3Low.getText());
+            fixedTpod[3]=Integer.parseInt(fieldTpod4.getText());      fixedPpodHigh[3]=Float.parseFloat(fieldPpod4High.getText());        fixedPpodLow[3]=Float.parseFloat(fieldPpod4Low.getText());
+            fixedTpod[4]=Integer.parseInt(fieldTpod5.getText());      fixedPpodHigh[4]=Float.parseFloat(fieldPpod5High.getText());        fixedPpodLow[4]=Float.parseFloat(fieldPpod5Low.getText());
+            fixedTpod[5]=Integer.parseInt(fieldTpod6.getText());      fixedPpodHigh[5]=Float.parseFloat(fieldPpod6High.getText());        fixedPpodLow[5]=Float.parseFloat(fieldPpod6Low.getText());
+            fixedTpod[6]=Integer.parseInt(fieldTpod7.getText());      fixedPpodHigh[6]=Float.parseFloat(fieldPpod7High.getText());        fixedPpodLow[6]=Float.parseFloat(fieldPpod7Low.getText());
+            fixedTpod[7]=Integer.parseInt(fieldTpod8.getText());      fixedPpodHigh[7]=Float.parseFloat(fieldPpod8High.getText());        fixedPpodLow[7]=Float.parseFloat(fieldPpod8Low.getText());
             fixedTpod[8]=Integer.parseInt(fieldTpod9.getText());      fixedPpodHigh[8]=Float.parseFloat(fieldPpod9High.getText());        fixedPpodLow[8]=Float.parseFloat(fieldPpod9Low.getText());
             fixedTpod[9]=Integer.parseInt(fieldTpod10.getText());     fixedPpodHigh[9]=Float.parseFloat(fieldPpod10High.getText());       fixedPpodLow[9]=Float.parseFloat(fieldPpod10Low.getText());
             fixedTpod[10]=Integer.parseInt(fieldTpod11.getText());    fixedPpodHigh[10]=Float.parseFloat(fieldPpod11High.getText());      fixedPpodLow[10]=Float.parseFloat(fieldPpod11Low.getText());
             fixedTpod[11]=Integer.parseInt(fieldTpod12.getText());    fixedPpodHigh[11]=Float.parseFloat(fieldPpod12High.getText());      fixedPpodLow[11]=Float.parseFloat(fieldPpod12Low.getText());
             fixedTpod[12]=Integer.parseInt(fieldTpod13.getText());    fixedPpodHigh[12]=Float.parseFloat(fieldPpod13High.getText());      fixedPpodLow[12]=Float.parseFloat(fieldPpod13Low.getText());
+            fixedTpod[13]=Integer.parseInt(fieldTpod14.getText());    fixedPpodHigh[13]=Float.parseFloat(fieldPpod14High.getText());      fixedPpodLow[13]=Float.parseFloat(fieldPpod14Low.getText());
             TelegramBotsApi botsApi = null;
             try {
                 botsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -353,7 +361,7 @@ public class Controller {
                 data.setPpodHigh(fixedPpodHigh);
                 data.setPpodLow(fixedPpodLow);
                 DataIO.saveData(data);
-                botBoilers = new MyAmazingBot(fixedTpod, fixedPpodHigh,fixedPpodLow,readDataMode);
+                botBoilers = new MyAmazingBot(fixedTpod, fixedPpodHigh,fixedPpodLow,readDataMode, this);
                 botsApi.registerBot(botBoilers);
 
             } catch (TelegramApiException | IOException e) {

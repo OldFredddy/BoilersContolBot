@@ -12,12 +12,12 @@ public class ActualParams {
 
     // Переменные и пути
     private String path;
-    private String[] tPod = new String[13];
-    private String[] tObr = new String[13];
-    private String[] pVx = new String[13];
-    private String[] tStreet = new String[13];
-    public float[] normalPvxHigh={0.5f, 0.5f, 0.5f, 0.5f, 0.2f, 6.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,0.5f};
-    public float[] normalPvxLow= {0.32f, 0.32f, 0.23f, 0.29f, 0.1f, 1.0f, 0.02f, 0.32f, 0.30f, 0.32f, 0.32f, 0.32f, 0.02f};
+    private String[] tPod = new String[14];
+    private String[] tObr = new String[14];
+    private String[] pVx = new String[14];
+    private String[] tStreet = new String[14];
+    public float[] normalPvxHigh={0.5f, 0.5f, 0.5f, 0.5f, 0.35f, 6.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,0.5f, 0.4f};
+    public float[] normalPvxLow= {0.32f, 0.32f, 0.23f, 0.29f, 0.12f, 1.0f, 0.02f, 0.32f, 0.30f, 0.32f, 0.32f, 0.32f, 0.02f, 0.22f};
     private String wind;
 
     private List<String> actualParametrs=new ArrayList<>();
@@ -34,7 +34,7 @@ public class ActualParams {
             parseTxtFile();
         }
         if (readDataMode=="modbusTCPIP"){
-            modbusRead();//TODO read поменять на другое название
+            modbusRead();  //TODO read поменять на другое название
         }
     }
 
@@ -76,6 +76,7 @@ public class ActualParams {
         tStreet[10]=actualParametrs.get(32); //t улицы  кот№11 Полярный
         tStreet[11]=actualParametrs.get(35); //t улицы  кот№12 Департамент
         tStreet[12]=tStreet[6]; //t улицы   кот№13 офис ЧСБК 2
+        tStreet[13]=tStreet[8]; //t улицы   кот№14 Шишкин
     }
     // Отдельные методы для парсинга различных параметров
     private void parseTPod() {
@@ -92,6 +93,7 @@ public class ActualParams {
         tPod[10]=actualParametrs.get(30); //t подачи кот№11 Полярный
         tPod[11]=actualParametrs.get(33); //t подачи кот№12 Департамент
         tPod[12]=actualParametrs.get(36); //t подачи кот№13 офис ЧСБК 2
+        tPod[13]=actualParametrs.get(38); //t подачи кот№14 Шишкин
     }
 
     private void parsePVx() {
@@ -108,6 +110,7 @@ public class ActualParams {
         pVx[10]=actualParametrs.get(31);   // давление  кот№11 Полярный
         pVx[11]=actualParametrs.get(34);   // давление  кот№12 Департамент
         pVx[12]=actualParametrs.get(37);   // давление  кот№13 офис ЧСБК 2
+        pVx[13]=actualParametrs.get(39);   // давление  кот№14 Шишкин
     }
     private void modbusRead(){
 

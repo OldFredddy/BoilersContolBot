@@ -12,7 +12,7 @@ public class Javafx extends Application {
 private static Scene scene;
     @Override
     public void start(Stage stage) throws Exception{
-        scene=new Scene(loadFXML("/newGen"),987,873);
+        scene=new Scene(loadFXML("/newGen"),987,890);
         stage.setScene(scene);
         stage.show();
 

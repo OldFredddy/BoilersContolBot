@@ -17,25 +17,23 @@ import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 public class MyAmazingBot extends TelegramLongPollingBot {
-    public MyAmazingBot(int[] fixedTpod, float[] fixedPpodHigh, float[] fixedPpodLow, String readDataMode) throws IOException {
+    public MyAmazingBot(int[] fixedTpod, float[] fixedPpodHigh, float[] fixedPpodLow, String readDataMode, Controller controller) throws IOException {
       this.fixedPpodHigh=fixedPpodHigh;
       this.fixedPpodLow=fixedPpodLow;
       this.fixedTpod=fixedTpod;
       this.readDataMode=readDataMode;
-
+      this.controller = controller;
+      correctForScada=DataIO.loadData().getCorrectForScada();
       clientsId.add(1102774002L);
       clientsId.add(6290939545L);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId("@BoilersAnadyr");
         ActualParams actualParams = new ActualParams(currentDir,readDataMode, this.fixedPpodHigh,this.fixedPpodLow);
-        String[] hangTpod={"-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-2","-1"};
-        String[] hangTpodNew={"-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-1"};
-        String[][] hangTpod2 = new String[5][13];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 12; j++) {
-                hangTpod2[i][j]=String.valueOf(i*j);
-            }
-        }
+        String[] hangTpod0={"-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-2","-1"};
+        String[] hangTpod1={"-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-1"};
+        String[] hangTpod2={"-15","-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3"};
+        String[] hangTpod3={"-16","-15","-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4"};
+        String[] hangTpod4={"-17","-16","-15","-14","-13","-12","-11","-10","-9","-8","-7","-6","-5"};
         sendMessage.setText(getCurrentParamsText(actualParams,errorsArray));
         sendMessage.setParseMode("Markdown");
         try {
@@ -54,7 +52,6 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                // После выполнения действий, этот метод снова будет вызван через 10 минут
                 SendMessage sendMessage = new SendMessage();
                 sendMessage.setChatId("@BoilersAnadyr");
                 ActualParams actualParams = null;
@@ -62,43 +59,25 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                     actualParams = new ActualParams(currentDir,readDataMode, fixedPpodHigh, fixedPpodLow);
                     LocalTime currentTime = LocalTime.now();
                     String formattedTime = currentTime.format(formatter);
-                    for (int i = 0; i < 12; i++) {
-                        hangTpodNew[i]=actualParams.getTPod()[i];
+                    switch (counter){
+                        case 0:{for (int i = 0; i < 12; i++) {hangTpod0[i]=actualParams.getTPod()[i];} break;}
+                        case 1:{for (int i = 0; i < 12; i++) {hangTpod1[i]=actualParams.getTPod()[i];} break;}
+                        case 2:{for (int i = 0; i < 12; i++) {hangTpod2[i]=actualParams.getTPod()[i];} break;}
+                        case 3:{for (int i = 0; i < 12; i++) {hangTpod3[i]=actualParams.getTPod()[i];} break;}
+                        case 4:{for (int i = 0; i < 12; i++) {hangTpod4[i]=actualParams.getTPod()[i];} break;}
                     }
                 sendMessage.setText(formattedTime+"\n"+getCurrentParamsText(actualParams,errorsArray));
                 sendMessage.setParseMode("Markdown");
                     Message message = execute(sendMessage);
-                    Thread.sleep(1000);
-
-                  // SendMessage sendMessageTest = new SendMessage();
-                  // sendMessageTest.setChatId(clientsId.get(0));
-                  // sendMessageTest.setText(boilerManager.getDevAndCurrent());
-                  // Message message1 = execute(sendMessageTest);
-
-                    Thread.sleep(1800);
+                    Thread.sleep(2800);
                     DeleteMessage deleteMessage = new DeleteMessage("@BoilersAnadyr",messageId);
                     Thread.sleep(1800);
                     messageId = message.getMessageId();
                     Thread.sleep(1800);
                     execute(deleteMessage);
-
-
-                    for (int k = 0; k < 13; k++) {
-                        boolean allValuesAreEqual = true;
-                        for (int i = 0; i < hangTpod2.length && allValuesAreEqual; i++) {
-                            for (int j = i + 1; j < hangTpod2.length && allValuesAreEqual; j++) {
-                                if (!hangTpod2[i][k].equals(hangTpod2[j][k])) {
-                                    allValuesAreEqual = false;
-                                }
-                            }
+                        if (arraysEquals(hangTpod0,hangTpod1,hangTpod2,hangTpod3,hangTpod4)) {
+                            sendAttention(numErrBoiler,"Зависание! Значения не менялись пол часа");
                         }
-                        if (allValuesAreEqual) {
-                            sendAttention(k,"Зависание! Значения не менялись пол часа");
-                        }
-                    }
-                    for (int j = 0; j < 13; j++) {
-                        hangTpod2[counter][j]=actualParams.getTPod()[j];
-                    }
                     counter++;
                     if (counter==5){counter=0;}
                     Thread.sleep(1800);
@@ -109,20 +88,23 @@ public class MyAmazingBot extends TelegramLongPollingBot {
         }, 5 * 60 * 1000, 5 * 60 * 1000); // Первое значение - задержка перед первым запуском, второе - интервал между запусками
      }
    BoilerManager boilerManager = new BoilerManager(13);
+    Controller controller;
     static volatile boolean keepRunning = true;
+    static volatile int boilerControlNum = -1;
     Integer counter =0;
     String readDataMode;
     private volatile int[] fixedTpod;
     private volatile float[] fixedPpodHigh;
     private volatile float[] fixedPpodLow;
     private volatile boolean enableCallService=false;
+    public volatile int[] correctForScada = {0, 0, 0, 0, 0, 0, 0, 0};
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
      private Integer[] avaryMessageID=new Integer[2];
     private Timer timer = new Timer();
     Integer[] avary2MessageID= new Integer[2];
     Integer[] avary3MessageID=new Integer[2];
     private long chatId = -1;
-    private boolean [] errorsArray = {false, false, false, false, false, false, false, false, false, false, false, false, false};
+    private boolean [] errorsArray = {false, false, false, false, false, false, false, false, false, false, false, false, false, false};
     static volatile Integer messageId = -1;
     List<Long> clientsId = new ArrayList<>();
     Object lock= new Object();
@@ -156,7 +138,6 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                         String s =actualParams2.getPVx()[i] ;
                         if ((Float.parseFloat(actualParams2.getTPod()[i])<30)&&(!actualParams2.getPVx()[i].equals("-1000"))) {
                             try {
-
                                 sendAttention(i, "Проблема в температуре подачи!");
                                 Thread.sleep(2000);
                             } catch (TelegramApiException e) {
@@ -173,7 +154,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                             continue;
                         }
                         if ((boilerManager.isTemperatureAnomaly(i,Float.parseFloat(actualParams2.getTPod()[i]),
-                                Float.parseFloat(actualParams2.getTStreet()[i]),fixedTpod))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
+                                Float.parseFloat(actualParams2.getTStreet()[i]),fixedTpod, correctForScada))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
                             try {
                                 sendAttention(i, "Проблема в температуре подачи!");
                                 Thread.sleep(2000);
@@ -277,9 +258,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
             String formattedRow = String.format(format, (i + 1), data[0][i] == null ? "" : data[0][i], data[1][i] == null ? "" : data[1][i], data[2][i] == null ? "" : data[2][i], emoji);
             result.append(formattedRow);
         }
-
         result.append("```\n");
-
         return result.toString();
     }
     private void sendAttention(int boilerIndex, String comment) throws TelegramApiException, InterruptedException {
@@ -319,22 +298,22 @@ public class MyAmazingBot extends TelegramLongPollingBot {
 
         }
     }
-private boolean[] secondAttempt={false,false,false,false,false,false,false,false,false,false,false,false,false};
-
+private boolean[] secondAttempt={false,false,false,false,false,false,false,false,false,false,false,false,false,false};
     public String[] boilerNames = {
-            "Котельная «Склады Мищенко»",                   //t улицы кот№1 Склады Мищенко
-            "Котельная «Выставка Ендальцева»",              //t улицы кот№2 Ендальцев         (датчик на базе)
-            "Котельная «ЧукотОптТорг»",                     //t улицы кот№3 ЧукотОптТорг      (датчик на базе)
-            "Котельная «ЧСБК новая»",                     //t улицы кот№4 "ЧСБК Новая"
-            "Котельная «Офис СВТ»",               //t улицы кот№5 офис "СВТ"
-            "Котельная «Общежитие на Южной»",                     //t улицы кот№6 общежитие на Южной
-            "Котельная «Офис ЧСБК»",                   //t улицы кот№7 офис ЧСБК
-            "Котельная «Рынок»",                     //t улицы кот№8 "Рынок"
-            "Котельная «Макатровых»",                     //t улицы кот№9 Макатровых
-            "Котельная ДС «Сказка»",                     //t  улицы кот№10  "Д/С Сказка"
-            "Котельная «Полярный»",                     //t улицы  кот№11 Полярный
-            "Котельная «Департамент»",                     //t улицы  кот№12 Департамент
-            "Котельная «Офис ЧСБК квартиры»"                     //t улицы  кот№12 Департамент
+            "Котельная «Склады Мищенко»",                   //0   кот№1 Склады Мищенко
+            "Котельная «Выставка Ендальцева»",              //1   кот№2 Ендальцев         (датчик на базе)
+            "Котельная «ЧукотОптТорг»",                     //2   кот№3 ЧукотОптТорг      (датчик на базе)
+            "Котельная «ЧСБК новая»",                       //3   кот№4 "ЧСБК Новая"
+            "Котельная «Офис СВТ»",                         //4   кот№5 офис "СВТ"
+            "Котельная «Общежитие на Южной»",               //5   кот№6 общежитие на Южной
+            "Котельная «Офис ЧСБК»",                        //6   кот№7 офис ЧСБК
+            "Котельная «Рынок»",                            //7   кот№8 "Рынок"
+            "Котельная «Макатровых»",                       //8   кот№9 Макатровых
+            "Котельная ДС «Сказка»",                        //9   кот№10  "Д/С Сказка"
+            "Котельная «Полярный»",                         //10  кот№11 Полярный
+            "Котельная «Департамент»",                      //11  кот№12 Департамент
+            "Котельная «Офис ЧСБК квартиры»",               //12  кот№13 квартиры в офисе
+            "Котельная Шишкина"                             //13  кот№14 ТО Шишкина
     };
 
     @Override
@@ -399,30 +378,78 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
                 }
             }
             if (update.getCallbackQuery().getData().equals("enableCallService")){
-                for (int i = 0; i < clientsId.size(); i++) {
-                    SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(),"Звонки включены!");
-                    try {
-                        Message message2 = execute(message);
-                        avary2MessageID[i]= message2.getMessageId();
-                        Thread.sleep(2000);
-                    } catch (TelegramApiException | InterruptedException e) {
-                        throw new RuntimeException(e);
+
+                    for (int i = 0; i < clientsId.size(); i++) {
+                        SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), "Звонки включены!");
+                        try {
+                            Message message2 = execute(message);
+                            avary2MessageID[i] = message2.getMessageId();
+                            Thread.sleep(2000);
+                        } catch (TelegramApiException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        enableCallService = true;
                     }
-                   enableCallService=true;
-                }
             }
             if (update.getCallbackQuery().getData().equals("disableCallService")){
-                for (int i = 0; i < clientsId.size(); i++) {
-                    SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(),"Звонки выключены!");
+                    for (int i = 0; i < clientsId.size(); i++) {
+                        SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), "Звонки выключены!");
+                        try {
+                            Message message2 = execute(message);
+                            avary2MessageID[i] = message2.getMessageId();
+                            Thread.sleep(2000);
+                        } catch (TelegramApiException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        enableCallService = false;
+                    }
+            }
+            if (update.getCallbackQuery().getData().equals("increaseTpod")||update.getCallbackQuery().getData().equals("decreaseTpod")){
+
                     try {
-                        Message message2 = execute(message);
-                        avary2MessageID[i]= message2.getMessageId();
+                        if (update.getCallbackQuery().getData().equals("increaseTpod")) { //TODO ЗАЩИТУ от НСД!
+                            SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), "Запрос на +3 отправлен!");
+                            execute(message);
+                            correctForScada[boilerControlNum] += 3;
+                            controller.data.setCorrectForScada(correctForScada);
+                            DataIO.saveData(controller.data);
+                            TemperatureCorrector.increaseTpod(correctForScada);
+                            Thread.sleep(2000);
+                        }
+                        if (update.getCallbackQuery().getData().equals("decreaseTpod")) {
+                            SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), "Запрос на -3 отправлен!");
+                            execute(message);//TODO дописать защиту по ClientsID
+                            correctForScada[boilerControlNum] -= 3;
+                            controller.data.setCorrectForScada(correctForScada);
+                            DataIO.saveData(controller.data);
+                            TemperatureCorrector.decreaseTpod(correctForScada);
+                            Thread.sleep(2000);
+                        }
+                    } catch (TelegramApiException | InterruptedException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    enableCallService = false;
+
+            }
+            if (update.getCallbackQuery().getData().equals("bControl")){
+                    try {
+                        Message message2 = execute(chooseBoilerKeyboard(update.getCallbackQuery().getMessage().getChatId().toString()));
                         Thread.sleep(2000);
                     } catch (TelegramApiException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     enableCallService=false;
+            }
+            if (update.getCallbackQuery().getData().contains("boiler")){
+                try {
+                    boilerControlNum=extractBoilerControlNum(update.getCallbackQuery().getData());
+                    Message message2 = execute(controlKeyboard(String.valueOf(clientsId.get(0))));
+                    Message message3 = execute(controlKeyboard(String.valueOf(clientsId.get(1))));
+                    Thread.sleep(2000);
+                } catch (TelegramApiException | InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+                enableCallService=false;
             }
         }
     }
@@ -438,26 +465,52 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
-        return tokens.getKey1();
+        return "5877039413:AAHRROOH1edVrqu6MlYOjMnrek5QuGFEejo";
     }
-
+    public SendMessage chooseBoilerKeyboard(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Выберите котельную:");
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList0 = new ArrayList<>(); List<InlineKeyboardButton> buttonList1 = new ArrayList<>(); List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList3 = new ArrayList<>(); List<InlineKeyboardButton> buttonList7 = new ArrayList<>(); List<InlineKeyboardButton> buttonList9 = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList10 = new ArrayList<>(); List<InlineKeyboardButton> buttonList11 = new ArrayList<>();
+        InlineKeyboardButton boiler0 = new InlineKeyboardButton();  boiler0.setCallbackData("boiler0");
+        InlineKeyboardButton boiler1 = new InlineKeyboardButton();  boiler1.setCallbackData("boiler1");
+        InlineKeyboardButton boiler2 = new InlineKeyboardButton();  boiler2.setCallbackData("boiler2");
+        InlineKeyboardButton boiler3 = new InlineKeyboardButton();  boiler3.setCallbackData("boiler3");
+        InlineKeyboardButton boiler7 = new InlineKeyboardButton();  boiler7.setCallbackData("boiler4");
+        InlineKeyboardButton boiler9 = new InlineKeyboardButton();  boiler9.setCallbackData("boiler5");
+        InlineKeyboardButton boiler10 = new InlineKeyboardButton();  boiler10.setCallbackData("boiler6");
+        InlineKeyboardButton boiler11 = new InlineKeyboardButton();  boiler11.setCallbackData("boiler7");
+        boiler0.setText("👨‍🦰 Склады Мищенко");
+        boiler1.setText("👨‍🦳 Ендальцев");
+        boiler2.setText("🏢 Офис ЧукотОптТорга");
+        boiler3.setText("🏭 ЧСБК база");
+        boiler7.setText("🛍️ Рынок");
+        boiler9.setText("🎠 ДС Сказка");
+        boiler10.setText("❄️ Полярный");
+        boiler11.setText("🏛️ Департамент");
+        buttonList0.add(boiler0); buttonList1.add(boiler1); buttonList2.add(boiler2); buttonList3.add(boiler3);
+        buttonList7.add(boiler7); buttonList9.add(boiler9); buttonList10.add(boiler10); buttonList11.add(boiler11);
+        rowList.add(buttonList0); rowList.add(buttonList1);rowList.add(buttonList2); rowList.add(buttonList3);
+        rowList.add(buttonList7); rowList.add(buttonList9);rowList.add(buttonList10); rowList.add(buttonList11);
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        message.setReplyMarkup(inlineKeyboardMarkup);
+        return message;
+    }
     public SendMessage startKeyboard(String chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText("Выберите действие:");
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList = new ArrayList<>();
         List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
-        InlineKeyboardButton sensorView = new InlineKeyboardButton();
-        sensorView.setText("\uD83C\uDF21Просмотр датчиков ");
-        sensorView.setCallbackData("sensorView");
         InlineKeyboardButton boilerControl = new InlineKeyboardButton();
         boilerControl.setText("\uD83D\uDD79Управление котельными");
-        boilerControl.setCallbackData("boilerControl");
-        buttonList.add(sensorView);
+        boilerControl.setCallbackData("bControl");
         buttonList2.add(boilerControl);
-        rowList.add(buttonList);
         rowList.add(buttonList2);
         inlineKeyboardMarkup.setKeyboard(rowList);
         message.setReplyMarkup(inlineKeyboardMarkup);
@@ -472,21 +525,49 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
         List<InlineKeyboardButton> buttonList = new ArrayList<>();
         List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
         List<InlineKeyboardButton> buttonList3 = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList4 = new ArrayList<>();
         InlineKeyboardButton sensorView = new InlineKeyboardButton();
         sensorView.setText("Сброс аварии");
         sensorView.setCallbackData("avaryReset");
+        InlineKeyboardButton boilerControl = new InlineKeyboardButton();
+        boilerControl.setText("\uD83D\uDD79Управление котельными");
+        boilerControl.setCallbackData("bControl");
+        buttonList.add(sensorView);
+        buttonList2.add(boilerControl);
+        rowList.add(buttonList);
+        rowList.add(buttonList2);
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        message.setReplyMarkup(inlineKeyboardMarkup);
+        return message;
+    }
+    public SendMessage controlKeyboard(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Выберите действие:");
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList3 = new ArrayList<>();
+        List<InlineKeyboardButton> buttonList4 = new ArrayList<>();
         InlineKeyboardButton enableCallServiceButton = new InlineKeyboardButton();
         enableCallServiceButton.setText("Включить звонки");
         enableCallServiceButton.setCallbackData("enableCallService");
         InlineKeyboardButton disableCallServiceButton = new InlineKeyboardButton();
         disableCallServiceButton.setText("Выключить звонки");
         disableCallServiceButton.setCallbackData("disableCallService");
-        buttonList.add(sensorView);
+        InlineKeyboardButton increaseTpodButton = new InlineKeyboardButton();
+        increaseTpodButton.setText("+3°C");
+        increaseTpodButton.setCallbackData("increaseTpod");
+        InlineKeyboardButton decreaseTpodButton = new InlineKeyboardButton();
+        decreaseTpodButton.setText("-3°C");
+        decreaseTpodButton.setCallbackData("decreaseTpod");
         buttonList2.add(enableCallServiceButton);
         buttonList3.add(disableCallServiceButton);
-        rowList.add(buttonList);
+        buttonList4.add(increaseTpodButton);
+        buttonList4.add(decreaseTpodButton);
         rowList.add(buttonList2);
         rowList.add(buttonList3);
+        rowList.add(buttonList4);
         inlineKeyboardMarkup.setKeyboard(rowList);
         message.setReplyMarkup(inlineKeyboardMarkup);
         return message;
@@ -511,12 +592,8 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText("Выберите котельную:");
-
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-
-
-
         for(int i = 0; i < boilerNames.length; i++) {
             List<InlineKeyboardButton> buttonList = new ArrayList<>();
             InlineKeyboardButton boilerControl = new InlineKeyboardButton();
@@ -548,6 +625,43 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
         timer=null;
         monitorThread2=null;
         System.gc();
+    }
+    int numErrBoiler=0;
+    public boolean arraysEquals(String[] a1, String[] a2, String[] a3, String[] a4, String[] a5){
+        boolean allEquals=true;
+        for (int i = 0; i < a1.length; i++) {
+         if(!a1[i].equals(a2[i]))  {allEquals=false;numErrBoiler=i;}
+         if(!a1[i].equals(a3[i]))  {allEquals=false;numErrBoiler=i;}
+         if(!a1[i].equals(a4[i]))  {allEquals=false;numErrBoiler=i;}
+         if(!a1[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
+        }
+        for (int i = 0; i < a2.length; i++) {
+            if(!a1[i].equals(a3[i]))  {allEquals=false;numErrBoiler=i;}
+            if(!a1[i].equals(a4[i]))  {allEquals=false;numErrBoiler=i;}
+            if(!a1[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
+        }
+        for (int i = 0; i < a3.length; i++) {
+            if(!a1[i].equals(a4[i]))  {allEquals=false;numErrBoiler=i;}
+            if(!a1[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
+        }
+        for (int i = 0; i < a5.length; i++) {
+            if(!a4[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
+        }
+        return allEquals;
+    }
+    public int extractBoilerControlNum(String data) {
+        // Использование регулярного выражения для извлечения числа из строки
+        Pattern pattern = Pattern.compile("boiler(\\d+)");
+        Matcher matcher = pattern.matcher(data);
+
+        if (matcher.find()) {
+            // Преобразование извлечённой строки в число
+            return Integer.parseInt(matcher.group(1));
+        } else {
+            // Если число не найдено, возвращаем значение, указывающее на ошибку
+            // Например, -1
+            return -1;
+        }
     }
 }
 

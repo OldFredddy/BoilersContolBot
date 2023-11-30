@@ -284,7 +284,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
              // Отправляем сообщение
             Message message = execute(message1);
             avaryMessageID[i] = message.getMessageId();
-            Message message2 = execute(avaryKeyboard(String.valueOf(clientsId.get(i))));
+            Message message2 = execute(Messages.avaryKeyboard(String.valueOf(clientsId.get(i))));
             avary3MessageID[i]= message2.getMessageId();
             // Возвращаемся к предыдущему экрану клавиатуры
            if (!secondAttempt[boilerIndex]){
@@ -342,7 +342,7 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
             } else {
                 try {
                     String chatId=update.getMessage().getChatId().toString();
-                    execute(startKeyboard(chatId)); // Sending our message object to user
+                    execute(Messages.startKeyboard(chatId)); // Sending our message object to user
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
@@ -429,11 +429,10 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
                         throw new RuntimeException(e);
                     }
                     enableCallService = false;
-
             }
             if (update.getCallbackQuery().getData().equals("bControl")){
                     try {
-                        Message message2 = execute(chooseBoilerKeyboard(update.getCallbackQuery().getMessage().getChatId().toString()));
+                        Message message2 = execute(Messages.chooseBoilerKeyboard(update.getCallbackQuery().getMessage().getChatId().toString()));
                         Thread.sleep(2000);
                     } catch (TelegramApiException | InterruptedException e) {
                         throw new RuntimeException(e);
@@ -443,8 +442,8 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
             if (update.getCallbackQuery().getData().contains("boiler")){
                 try {
                     boilerControlNum=extractBoilerControlNum(update.getCallbackQuery().getData());
-                    Message message2 = execute(controlKeyboard(String.valueOf(clientsId.get(0))));
-                    Message message3 = execute(controlKeyboard(String.valueOf(clientsId.get(1))));
+                    Message message2 = execute(Messages.controlKeyboard(String.valueOf(clientsId.get(0))));
+                    Message message3 = execute(Messages.controlKeyboard(String.valueOf(clientsId.get(1))));
                     Thread.sleep(2000);
                 } catch (TelegramApiException | InterruptedException e) {
                     throw new RuntimeException(e);
@@ -453,172 +452,17 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
             }
         }
     }
-
     @Override
     public String getBotUsername() {
-        // Return bot username
-        // If bot username is @MyAmazingBot, it must return 'MyAmazingBot'
-        //return "@BoilerControlAN_bot";
         return "@BoilerControlAN_bot";
     }
     Tokens tokens;
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
-        return "5877039413:AAHRROOH1edVrqu6MlYOjMnrek5QuGFEejo";
+        return tokens.getKey1();
     }
-    public SendMessage chooseBoilerKeyboard(String chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Выберите котельную:");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList0 = new ArrayList<>(); List<InlineKeyboardButton> buttonList1 = new ArrayList<>(); List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList3 = new ArrayList<>(); List<InlineKeyboardButton> buttonList7 = new ArrayList<>(); List<InlineKeyboardButton> buttonList9 = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList10 = new ArrayList<>(); List<InlineKeyboardButton> buttonList11 = new ArrayList<>();
-        InlineKeyboardButton boiler0 = new InlineKeyboardButton();  boiler0.setCallbackData("boiler0");
-        InlineKeyboardButton boiler1 = new InlineKeyboardButton();  boiler1.setCallbackData("boiler1");
-        InlineKeyboardButton boiler2 = new InlineKeyboardButton();  boiler2.setCallbackData("boiler2");
-        InlineKeyboardButton boiler3 = new InlineKeyboardButton();  boiler3.setCallbackData("boiler3");
-        InlineKeyboardButton boiler7 = new InlineKeyboardButton();  boiler7.setCallbackData("boiler4");
-        InlineKeyboardButton boiler9 = new InlineKeyboardButton();  boiler9.setCallbackData("boiler5");
-        InlineKeyboardButton boiler10 = new InlineKeyboardButton();  boiler10.setCallbackData("boiler6");
-        InlineKeyboardButton boiler11 = new InlineKeyboardButton();  boiler11.setCallbackData("boiler7");
-        boiler0.setText("👨‍🦰 Склады Мищенко");
-        boiler1.setText("👨‍🦳 Ендальцев");
-        boiler2.setText("🏢 Офис ЧукотОптТорга");
-        boiler3.setText("🏭 ЧСБК база");
-        boiler7.setText("🛍️ Рынок");
-        boiler9.setText("🎠 ДС Сказка");
-        boiler10.setText("❄️ Полярный");
-        boiler11.setText("🏛️ Департамент");
-        buttonList0.add(boiler0); buttonList1.add(boiler1); buttonList2.add(boiler2); buttonList3.add(boiler3);
-        buttonList7.add(boiler7); buttonList9.add(boiler9); buttonList10.add(boiler10); buttonList11.add(boiler11);
-        rowList.add(buttonList0); rowList.add(buttonList1);rowList.add(buttonList2); rowList.add(buttonList3);
-        rowList.add(buttonList7); rowList.add(buttonList9);rowList.add(buttonList10); rowList.add(buttonList11);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
-    }
-    public SendMessage startKeyboard(String chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Выберите действие:");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
-        InlineKeyboardButton boilerControl = new InlineKeyboardButton();
-        boilerControl.setText("\uD83D\uDD79Управление котельными");
-        boilerControl.setCallbackData("bControl");
-        buttonList2.add(boilerControl);
-        rowList.add(buttonList2);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
-    }
-    public SendMessage avaryKeyboard(String chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Выберите действие:");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList3 = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList4 = new ArrayList<>();
-        InlineKeyboardButton sensorView = new InlineKeyboardButton();
-        sensorView.setText("Сброс аварии");
-        sensorView.setCallbackData("avaryReset");
-        InlineKeyboardButton boilerControl = new InlineKeyboardButton();
-        boilerControl.setText("\uD83D\uDD79Управление котельными");
-        boilerControl.setCallbackData("bControl");
-        buttonList.add(sensorView);
-        buttonList2.add(boilerControl);
-        rowList.add(buttonList);
-        rowList.add(buttonList2);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
-    }
-    public SendMessage controlKeyboard(String chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Выберите действие:");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList2 = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList3 = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList4 = new ArrayList<>();
-        InlineKeyboardButton enableCallServiceButton = new InlineKeyboardButton();
-        enableCallServiceButton.setText("Включить звонки");
-        enableCallServiceButton.setCallbackData("enableCallService");
-        InlineKeyboardButton disableCallServiceButton = new InlineKeyboardButton();
-        disableCallServiceButton.setText("Выключить звонки");
-        disableCallServiceButton.setCallbackData("disableCallService");
-        InlineKeyboardButton increaseTpodButton = new InlineKeyboardButton();
-        increaseTpodButton.setText("+3°C");
-        increaseTpodButton.setCallbackData("increaseTpod");
-        InlineKeyboardButton decreaseTpodButton = new InlineKeyboardButton();
-        decreaseTpodButton.setText("-3°C");
-        decreaseTpodButton.setCallbackData("decreaseTpod");
-        buttonList2.add(enableCallServiceButton);
-        buttonList3.add(disableCallServiceButton);
-        buttonList4.add(increaseTpodButton);
-        buttonList4.add(decreaseTpodButton);
-        rowList.add(buttonList2);
-        rowList.add(buttonList3);
-        rowList.add(buttonList4);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
-    }
-    public SendMessage backKeyboard(String chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Обратно к котельным:");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> buttonList = new ArrayList<>();
-        InlineKeyboardButton sensorView = new InlineKeyboardButton();
-        sensorView.setText("↩️Назад");
-        sensorView.setCallbackData("backToBoilers");
-        buttonList.add(sensorView);
-        rowList.add(buttonList);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
-    }
-    public SendMessage sensorViewKeyboard(String chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Выберите котельную:");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        for(int i = 0; i < boilerNames.length; i++) {
-            List<InlineKeyboardButton> buttonList = new ArrayList<>();
-            InlineKeyboardButton boilerControl = new InlineKeyboardButton();
-            boilerControl.setText(boilerNames[i]);
-            boilerControl.setCallbackData("boiler" + i);
-            buttonList.add(boilerControl);
-            rowList.add(buttonList);
-        }
 
-        InlineKeyboardButton backControl = new InlineKeyboardButton();
-        backControl.setText("↩️Назад");
-        backControl.setCallbackData("backToGeneral");
-        InlineKeyboardButton showAllBoilers = new InlineKeyboardButton();
-        showAllBoilers.setText("Показать все");
-        showAllBoilers.setCallbackData("showAllBoilers");
-        List<InlineKeyboardButton> backButtonList = new ArrayList<>();
-        List<InlineKeyboardButton> showAllBoilersList=new ArrayList<>();
-        showAllBoilersList.add(showAllBoilers);
-        backButtonList.add(backControl);
-        rowList.add(backButtonList);
-        rowList.add(showAllBoilersList);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
-    }
     public void stop() {
         timer.cancel();
         monitorThread2.interrupt();

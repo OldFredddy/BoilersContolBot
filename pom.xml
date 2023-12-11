@@ -104,6 +104,16 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.15.2</version> <!-- Проверьте наличи более новой верии -->
         </dependency>
+    <dependency>
+        <groupId>com.sparkjava</groupId>
+        <artifactId>spark-core</artifactId>
+        <version>2.9.4</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+    </dependency>
 </dependencies>
     <repositories>
         <repository>

@@ -1,40 +1,25 @@
 package org.example;
 
 
-import javafx.embed.swing.SwingFXUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import java.io.File;
+
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.*;
 import javax.imageio.IIOException;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 
 public class Controller {
@@ -270,10 +255,17 @@ public class Controller {
     private GudimBot botGudim;
     public AppData data;
     private String readDataMode;
+public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    public  ActualParams actualParamsForRest;
+    public CopyOnWriteArrayList<Boiler> boilers;
     @FXML
     void initialize() throws IIOException, TelegramApiException {
         try {
            data = new AppData();
+           boilers = new CopyOnWriteArrayList<>();
+            for (int i = 0; i < 14; i++) {
+                boilers.add(new Boiler());
+            }
             //   ModbusServer modbusServer = new ModbusServer("192.168.6.190", 502, 1, 50,
                     //   1, 0, 1, 0, 125, 125, 0);
             //   modbusServer.startServer(this);
@@ -361,17 +353,54 @@ public class Controller {
                 data.setPpodHigh(fixedPpodHigh);
                 data.setPpodLow(fixedPpodLow);
                 DataIO.saveData(data);
-                botBoilers = new MyAmazingBot(fixedTpod, fixedPpodHigh,fixedPpodLow,readDataMode, this);
+                botBoilers = new MyAmazingBot(fixedTpod, fixedPpodHigh, fixedPpodLow, readDataMode, this);
                 botsApi.registerBot(botBoilers);
-
+                startTimerRefreshDataForRest();
+                get("/params", (request, response) -> {
+                    response.type("application/json");
+                    return new Gson().toJsonTree(boilers);
+                });
+                post("/avaryreset", (request, response) -> {
+                    botBoilers.resetAvary();
+                    response.type("application/json");
+                    return new Gson().toJson("Операция сброса выполнена");
+                });
+                post("/correcttplan", (request, response) -> {
+                    try {
+                        String requestBody = request.body();
+                        Gson gson = new Gson();
+                        int[] tempCorrectForScada = gson.fromJson(requestBody, int[].class);
+                        botBoilers.setCorrectForScada(tempCorrectForScada);
+                        response.type("application/json");
+                        return gson.toJson("Success");
+                    } catch (JsonSyntaxException e) {
+                        response.status(400);
+                        return new Gson().toJson("Invalid JSON format");
+                    }
+                });
+                post("/correcttalarm", (request, response) -> {
+                    try {
+                        String requestBody = request.body();
+                        Gson gson = new Gson();
+                        int[] correctFromUsers = gson.fromJson(requestBody, int[].class);
+                        botBoilers.setCorrectFromUsers(correctFromUsers);
+                        correctFromUsers1=correctFromUsers;
+                        response.type("application/json");
+                        return gson.toJson("Success");
+                    } catch (JsonSyntaxException e) {
+                        response.status(400);
+                        return new Gson().toJson("Invalid JSON format");
+                    }
+                });
             } catch (TelegramApiException | IOException e) {
                 e.printStackTrace();
             }
+
         });
        stopButton.setOnAction(e->{
            if (botBoilers != null) {
                botBoilers.stop();
-               botBoilers = null;  // Опционально: обнулите ссылку на бота, если это необходимо
+               botBoilers = null;
            }
        });
         callButton.setOnAction(e->{
@@ -393,18 +422,18 @@ public class Controller {
         });
         startButtonGudim.setOnAction(event ->{
             startButtonGudim.setDisable(true);
-            if (fieldGoGHigh.getText().equals("")){ fieldGoGHigh.setText("-1");}   if (fieldGoGHigh.getText().equals("")){ fieldGoGHigh.setText("-1");}
-            if (fieldGoGLow.getText().equals("")){ fieldGoGLow.setText("-1");}   if (fieldGoGLow.getText().equals("")){ fieldGoGLow.setText("-1");}
+            if (fieldGoGHigh.getText().equals("")){ fieldGoGHigh.setText("-1");}             if (fieldGoGHigh.getText().equals("")){ fieldGoGHigh.setText("-1");}
+            if (fieldGoGLow.getText().equals("")){ fieldGoGLow.setText("-1");}               if (fieldGoGLow.getText().equals("")){ fieldGoGLow.setText("-1");}
             if (fieldPpodSk1GHigh.getText().equals("")){ fieldPpodSk1GHigh.setText("-1");}   if (fieldPpodSk1GHigh.getText().equals("")){ fieldPpodSk1GHigh.setText("-1");}
-            if (fieldPpodSk1GLow.getText().equals("")){ fieldPpodSk1GLow.setText("-1");}   if (fieldPpodSk1GLow.getText().equals("")){ fieldPpodSk1GLow.setText("-1");}
+            if (fieldPpodSk1GLow.getText().equals("")){ fieldPpodSk1GLow.setText("-1");}     if (fieldPpodSk1GLow.getText().equals("")){ fieldPpodSk1GLow.setText("-1");}
             if (fieldPpodSk2GHigh.getText().equals("")){ fieldPpodSk2GHigh.setText("-1");}   if (fieldPpodSk2GHigh.getText().equals("")){ fieldPpodSk2GHigh.setText("-1");}
-            if (fieldPpodSk2GLow.getText().equals("")){ fieldPpodSk2GLow.setText("-1");}   if (fieldPpodSk2GLow.getText().equals("")){ fieldPpodSk2GLow.setText("-1");}
+            if (fieldPpodSk2GLow.getText().equals("")){ fieldPpodSk2GLow.setText("-1");}     if (fieldPpodSk2GLow.getText().equals("")){ fieldPpodSk2GLow.setText("-1");}
             if (fieldTpodGorGHigh.getText().equals("")){ fieldTpodGorGHigh.setText("-1");}   if (fieldTpodGorGHigh.getText().equals("")){ fieldTpodGorGHigh.setText("-1");}
-            if (fieldTpodGorGLow.getText().equals("")){ fieldTpodGorGLow.setText("-1");}   if (fieldTpodGorGLow.getText().equals("")){ fieldTpodGorGLow.setText("-1");}
+            if (fieldTpodGorGLow.getText().equals("")){ fieldTpodGorGLow.setText("-1");}     if (fieldTpodGorGLow.getText().equals("")){ fieldTpodGorGLow.setText("-1");}
             if (fieldTpodSk1GHigh.getText().equals("")){ fieldTpodSk1GHigh.setText("-1");}   if (fieldTpodSk1GHigh.getText().equals("")){ fieldTpodSk1GHigh.setText("-1");}
-            if (fieldTpodSk1GLow.getText().equals("")){ fieldTpodSk1GLow.setText("-1");}   if (fieldTpodSk1GLow.getText().equals("")){ fieldTpodSk1GLow.setText("-1");}
+            if (fieldTpodSk1GLow.getText().equals("")){ fieldTpodSk1GLow.setText("-1");}     if (fieldTpodSk1GLow.getText().equals("")){ fieldTpodSk1GLow.setText("-1");}
             if (fieldTpodSk2GHigh.getText().equals("")){ fieldTpodSk2GHigh.setText("-1");}   if (fieldTpodSk2GHigh.getText().equals("")){ fieldTpodSk2GHigh.setText("-1");}
-            if (fieldTpodSk2GLow.getText().equals("")){ fieldTpodSk2GLow.setText("-1");}   if (fieldTpodSk2GLow.getText().equals("")){ fieldTpodSk2GLow.setText("-1");}
+            if (fieldTpodSk2GLow.getText().equals("")){ fieldTpodSk2GLow.setText("-1");}     if (fieldTpodSk2GLow.getText().equals("")){ fieldTpodSk2GLow.setText("-1");}
             fixedParamsGudim[0]=Integer.parseInt(fieldGoGHigh.getText());
             fixedParamsGudim[1]=Integer.parseInt(fieldGoGLow.getText());
             fixedParamsGudim[2]=Integer.parseInt(fieldPpodSk1GHigh.getText());
@@ -431,9 +460,45 @@ public class Controller {
                 e.printStackTrace();
             }
         });
-
     }
     public void setTextField(String s){
         fieldTpod13.setText(s);
+    }
+    private void startTimerRefreshDataForRest(){
+        Timer timer = new Timer();
+        TimerTask refreshDataTask = new TimerTask() {
+            @Override
+            public void run() {
+                actualParamsForRest = null;
+                System.gc();
+                try {
+                    String currentDir = Paths.get("").toAbsolutePath().toString()+"/actualparams.txt";
+                    actualParamsForRest = new ActualParams(currentDir,readDataMode, fixedPpodHigh, fixedPpodLow);
+                    for (int i = 0; i < 14; i++) {
+                        boilers.get(i).settPod(actualParamsForRest.getTPod()[i]);
+                        boilers.get(i).setpPod(actualParamsForRest.getPVx()[i]);
+                        boilers.get(i).settUlica(actualParamsForRest.getTStreet()[i]);
+                        boilers.get(i).settPlan(actualParamsForRest.gettPlan()[i]);
+                        boilers.get(i).settAlarm(actualParamsForRest.getAlarm(fixedTpod,botBoilers.getCorrectForScada(),i,correctFromUsers1));
+                        boolean ok = botBoilers.errorsArray[i];
+                        ok=!ok;
+                        boilers.get(i).setOk(ok);
+                        boilers.get(i).setImageResId(i);
+                        int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
+                        int[] boilerCorrectTable = botBoilers.getCorrectForScada();
+                        int correct = 0;
+                        for (int j = 0; j < boilerCompTable.length; j++) {
+                            if (boilerCompTable[j]==i){
+                                correct=boilerCorrectTable[j];
+                            }
+                        }
+                        boilers.get(i).setCorrectionTpod(String.valueOf(correct));
+                    }
+                } catch (IOException | NullPointerException | NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(refreshDataTask, 3  * 1000, 3  * 1000);
     }
 }

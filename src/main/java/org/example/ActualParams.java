@@ -16,11 +16,14 @@ public class ActualParams {
     private String[] tObr = new String[14];
     private String[] pVx = new String[14];
     private String[] tStreet = new String[14];
+    private String[] alarm = new String[14];
+    private String[] tPlan = new String[14];
     public float[] normalPvxHigh={0.5f, 0.5f, 0.5f, 0.5f, 0.35f, 6.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,0.5f, 0.4f};
     public float[] normalPvxLow= {0.32f, 0.32f, 0.23f, 0.29f, 0.12f, 1.0f, 0.02f, 0.32f, 0.30f, 0.32f, 0.32f, 0.32f, 0.02f, 0.22f};
     private String wind;
 
-    private List<String> actualParametrs=new ArrayList<>();
+    private List<String> actualParametrs = new ArrayList<>();
+    private List<String> actualTplan = new ArrayList<>();
 
     // Конструктор
     public ActualParams(String path,String readDataMode, float[] customPvxHigh, float[] customPvxLow) throws IOException {
@@ -30,20 +33,40 @@ public class ActualParams {
               normalPvxHigh[i]=customPvxHigh[i];
           }
         }
-        if (readDataMode=="scadaImportTXT"){
+        if (readDataMode.equals("scadaImportTXT")){
             parseTxtFile();
         }
-        if (readDataMode=="modbusTCPIP"){
+        if (readDataMode.equals("modbusTCPIP")){
             modbusRead();  //TODO read поменять на другое название
         }
     }
-
     // Методы доступа
     public String[] getTPod() { return tPod; }
+    public String[] gettPlan() { return tPlan; }
     public String[] getTObr() { return tObr; }
     public String[] getPVx() { return pVx; }
     public String[] getTStreet() { return tStreet; }
-
+    public String getAlarm(int[] fixedTpod,
+                             int[] correctTplan,
+                             int numberOfBoiler,
+                           int[] correctFromUsers){
+        int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
+        int correct = 0;
+        for (int i = 0; i < tStreet.length; i++) {
+            double tempTstreet = Float.parseFloat(tStreet[i]);
+            alarm[i]=String.valueOf(tempTstreet*tempTstreet*0.00886-0.803*tempTstreet+54);
+            if (fixedTpod[i]!=-1) {
+                alarm[i]= String.valueOf(fixedTpod[i]);
+            }
+            for (int j = 0; j < boilerCompTable.length; j++) {
+                if (boilerCompTable[j]==numberOfBoiler){
+                    correct=correctTplan[j];
+                }
+            }
+            alarm[i]=String.valueOf(Float.parseFloat(alarm[i])-5+correct +correctFromUsers[numberOfBoiler]);
+        }
+        return String.valueOf(alarm[numberOfBoiler]);
+    }
 
 
     // Метод, выполняющий парсинг .txt файла
@@ -57,9 +80,20 @@ public class ActualParams {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        String currentDirTPlan = Paths.get("").toAbsolutePath().toString()+"/actualtplan.txt";
+        File textFileForTplan = new File(currentDirTPlan);
+        try (BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(textFileForTplan), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br1.readLine()) != null) {
+                actualTplan.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         parseTPod();
         parsePVx();
         parseTStreet(); // Температура
+        parseTplan();
         actualParametrs.clear();
     }
     private void parseTStreet() {
@@ -114,5 +148,10 @@ public class ActualParams {
     }
     private void modbusRead(){
 
+    }
+    private void parseTplan(){
+        for (int i = 0; i < 14; i++) {
+            tPlan[i]=actualTplan.get(i);
+        }
     }
 }

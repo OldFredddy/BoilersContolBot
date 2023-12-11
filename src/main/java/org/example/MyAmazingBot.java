@@ -29,11 +29,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId("@BoilersAnadyr");
         ActualParams actualParams = new ActualParams(currentDir,readDataMode, this.fixedPpodHigh,this.fixedPpodLow);
-        String[] hangTpod0={"-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-2","-1"};
-        String[] hangTpod1={"-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3","-1"};
-        String[] hangTpod2={"-15","-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4","-3"};
-        String[] hangTpod3={"-16","-15","-14","-13","-12","-11","-10","-9","-8","-7","-6","-5","-4"};
-        String[] hangTpod4={"-17","-16","-15","-14","-13","-12","-11","-10","-9","-8","-7","-6","-5"};
+
         sendMessage.setText(getCurrentParamsText(actualParams,errorsArray));
         sendMessage.setParseMode("Markdown");
         try {
@@ -59,13 +55,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                     actualParams = new ActualParams(currentDir,readDataMode, fixedPpodHigh, fixedPpodLow);
                     LocalTime currentTime = LocalTime.now();
                     String formattedTime = currentTime.format(formatter);
-                    switch (counter){
-                        case 0:{for (int i = 0; i < 12; i++) {hangTpod0[i]=actualParams.getTPod()[i];} break;}
-                        case 1:{for (int i = 0; i < 12; i++) {hangTpod1[i]=actualParams.getTPod()[i];} break;}
-                        case 2:{for (int i = 0; i < 12; i++) {hangTpod2[i]=actualParams.getTPod()[i];} break;}
-                        case 3:{for (int i = 0; i < 12; i++) {hangTpod3[i]=actualParams.getTPod()[i];} break;}
-                        case 4:{for (int i = 0; i < 12; i++) {hangTpod4[i]=actualParams.getTPod()[i];} break;}
-                    }
+
                 sendMessage.setText(formattedTime+"\n"+getCurrentParamsText(actualParams,errorsArray));
                 sendMessage.setParseMode("Markdown");
                     Message message = execute(sendMessage);
@@ -75,20 +65,45 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                     messageId = message.getMessageId();
                     Thread.sleep(1800);
                     execute(deleteMessage);
-                        if (arraysEquals(hangTpod0,hangTpod1,hangTpod2,hangTpod3,hangTpod4)) {
-                            sendAttention(numErrBoiler,"Зависание! Значения не менялись пол часа");
-                        }
-                    counter++;
-                    if (counter==5){counter=0;}
                     Thread.sleep(1800);
                 } catch (TelegramApiException | InterruptedException |IOException e) {
 
                 }
             }
         }, 5 * 60 * 1000, 5 * 60 * 1000); // Первое значение - задержка перед первым запуском, второе - интервал между запусками
+        timerForBreaks.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                ActualParams actualParams = null;
+                try {
+                    actualParams = new ActualParams(currentDir,readDataMode, fixedPpodHigh, fixedPpodLow);
+                    if (counter.equals(0)){
+                        hangTpod0=actualParams.getTPod();
+                    }
+                    if (counter.equals(1)){
+                        hangTpod1=actualParams.getTPod();
+                    }
+                    if (counter.equals(2)){
+                        hangTpod2=actualParams.getTPod();
+                    }
+                    if (counter > 2){
+                        counter=0;
+                    }
+                    if (arraysEquals(hangTpod0,hangTpod1,hangTpod2)) {
+                        sendAttention(numErrBoiler,"Зависание! Значения не менялись 15 минут");
+                    }
+                    Thread.sleep(1800);
+                } catch (TelegramApiException|InterruptedException | IOException e) {
+
+                }
+            }
+        }, 5  * 1000, 5 * 60 * 1000); // Первое значение - задержка перед первым запуском, второе - интервал между запусками
      }
    BoilerManager boilerManager = new BoilerManager(13);
     Controller controller;
+    String[] hangTpod0;
+    String[] hangTpod1={ "1", "2","3","4","5","6","7","8","9","10","11","12","13","0"};
+    String[] hangTpod2={"0", "1", "2","3","4","5","6","7","8","9","10","11","12","13"};
     static volatile boolean keepRunning = true;
     static volatile int boilerControlNum = -1;
     Integer counter =0;
@@ -98,18 +113,19 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     private volatile float[] fixedPpodLow;
     private volatile boolean enableCallService=false;
     public volatile int[] correctForScada = {0, 0, 0, 0, 0, 0, 0, 0};
+    public volatile int[] correctFromUsers = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
      private Integer[] avaryMessageID=new Integer[2];
     private Timer timer = new Timer();
+    private Timer timerForBreaks = new Timer();
     Integer[] avary2MessageID= new Integer[2];
     Integer[] avary3MessageID=new Integer[2];
     private long chatId = -1;
-    private boolean [] errorsArray = {false, false, false, false, false, false, false, false, false, false, false, false, false, false};
+    public boolean [] errorsArray = {false, false, false, false, false, false, false, false, false, false, false, false, false, false};
     static volatile Integer messageId = -1;
     List<Long> clientsId = new ArrayList<>();
-    Object lock= new Object();
+
     public boolean checkForAvary =true;
-    Semaphore semaphore = new Semaphore(0);
     String currentDir = Paths.get("").toAbsolutePath().toString()+"/actualparams.txt";
 
     Thread monitorThread2 = new Thread(()->{
@@ -154,7 +170,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
                             continue;
                         }
                         if ((boilerManager.isTemperatureAnomaly(i,Float.parseFloat(actualParams2.getTPod()[i]),
-                                Float.parseFloat(actualParams2.getTStreet()[i]),fixedTpod, correctForScada))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
+                                Float.parseFloat(actualParams2.getTStreet()[i]),fixedTpod, correctForScada, correctFromUsers))&&(!actualParams2.getPVx()[i].equals("-1000"))) {
                             try {
                                 sendAttention(i, "Проблема в температуре подачи!");
                                 Thread.sleep(2000);
@@ -413,7 +429,7 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
                             correctForScada[boilerControlNum] += 3;
                             controller.data.setCorrectForScada(correctForScada);
                             DataIO.saveData(controller.data);
-                            TemperatureCorrector.increaseTpod(correctForScada);
+                            TemperatureCorrector.changeTpod(correctForScada);
                             Thread.sleep(2000);
                         }
                         if (update.getCallbackQuery().getData().equals("decreaseTpod")) {
@@ -422,7 +438,7 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
                             correctForScada[boilerControlNum] -= 3;
                             controller.data.setCorrectForScada(correctForScada);
                             DataIO.saveData(controller.data);
-                            TemperatureCorrector.decreaseTpod(correctForScada);
+                            TemperatureCorrector.changeTpod(correctForScada);
                             Thread.sleep(2000);
                         }
                     } catch (TelegramApiException | InterruptedException | IOException e) {
@@ -443,6 +459,7 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
                 try {
                     boilerControlNum=extractBoilerControlNum(update.getCallbackQuery().getData());
                     Message message2 = execute(Messages.controlKeyboard(String.valueOf(clientsId.get(0))));
+                    Thread.sleep(4000);
                     Message message3 = execute(Messages.controlKeyboard(String.valueOf(clientsId.get(1))));
                     Thread.sleep(2000);
                 } catch (TelegramApiException | InterruptedException e) {
@@ -456,7 +473,7 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
     public String getBotUsername() {
         return "@BoilerControlAN_bot";
     }
-    Tokens tokens;
+    Tokens tokens=new Tokens();
     @Override
     public String getBotToken() {
         // Return bot token from BotFather
@@ -471,40 +488,61 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
         System.gc();
     }
     int numErrBoiler=0;
-    public boolean arraysEquals(String[] a1, String[] a2, String[] a3, String[] a4, String[] a5){
+    public boolean arraysEquals(String[] a1, String[] a2, String[] a3){
         boolean allEquals=true;
         for (int i = 0; i < a1.length; i++) {
          if(!a1[i].equals(a2[i]))  {allEquals=false;numErrBoiler=i;}
          if(!a1[i].equals(a3[i]))  {allEquals=false;numErrBoiler=i;}
-         if(!a1[i].equals(a4[i]))  {allEquals=false;numErrBoiler=i;}
-         if(!a1[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
-        }
-        for (int i = 0; i < a2.length; i++) {
-            if(!a1[i].equals(a3[i]))  {allEquals=false;numErrBoiler=i;}
-            if(!a1[i].equals(a4[i]))  {allEquals=false;numErrBoiler=i;}
-            if(!a1[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
-        }
-        for (int i = 0; i < a3.length; i++) {
-            if(!a1[i].equals(a4[i]))  {allEquals=false;numErrBoiler=i;}
-            if(!a1[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
-        }
-        for (int i = 0; i < a5.length; i++) {
-            if(!a4[i].equals(a5[i]))  {allEquals=false;numErrBoiler=i;}
+         if(!a2[i].equals(a3[i]))  {allEquals=false;numErrBoiler=i;}
         }
         return allEquals;
     }
     public int extractBoilerControlNum(String data) {
-        // Использование регулярного выражения для извлечения числа из строки
         Pattern pattern = Pattern.compile("boiler(\\d+)");
         Matcher matcher = pattern.matcher(data);
 
         if (matcher.find()) {
-            // Преобразование извлечённой строки в число
             return Integer.parseInt(matcher.group(1));
         } else {
-            // Если число не найдено, возвращаем значение, указывающее на ошибку
-            // Например, -1
             return -1;
+        }
+    }
+    public int[] getCorrectForScada() {
+        return correctForScada;
+    }
+    public void resetAvary(){
+        for (int i = 0; i < errorsArray.length; i++) {
+            errorsArray[i]=false;
+            secondAttempt[i]=false;
+        }
+        checkForAvary=true;
+    }
+    public void setCorrectForScada(int[] arrForCorrectScada) throws IOException {
+        int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
+        int correctIndex = -1;
+        int correct = -1;
+        for (int i = 0; i < arrForCorrectScada.length; i++) {
+            if(arrForCorrectScada[i]!=0){
+                correctIndex = i;
+                correct = arrForCorrectScada[i];
+                break;
+            }
+        }
+        for (int i = 0; i < boilerCompTable.length; i++) {
+            if (boilerCompTable[i]==correctIndex){
+                correctForScada[i]+=correct;
+                break;
+            }
+        }
+        controller.data.setCorrectForScada(correctForScada);
+        DataIO.saveData(controller.data);
+        TemperatureCorrector.changeTpod(correctForScada);
+    }
+    public  void setCorrectFromUsers(int[] arrCorrectFromUsers){
+        for (int i = 0; i < arrCorrectFromUsers.length; i++) {
+            if(arrCorrectFromUsers[i]!=0) {
+                correctFromUsers[i]+=arrCorrectFromUsers[i];
+            }
         }
     }
 }

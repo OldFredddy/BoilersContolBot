@@ -18,7 +18,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.example.GUIStarter</mainClass>
+                  <mainClass>org.csbk.GUIStarter</mainClass>
                   <manifestEntries>
                     <Multi-Release>true</Multi-Release>
                   </manifestEntries>
@@ -51,7 +51,7 @@
     </repository>
   </repositories>
   <properties>
-    <main.class>org.example.GUIStarter</main.class>
+    <main.class>org.csbk.GUIStarter</main.class>
     <maven.compiler.source>19</maven.compiler.source>
     <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
     <maven.compiler.target>19</maven.compiler.target>

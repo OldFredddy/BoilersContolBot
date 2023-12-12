@@ -1,4 +1,4 @@
-package org.example;
+package org.csbk;
 
     public class AppData {
         private int[] temperatures;

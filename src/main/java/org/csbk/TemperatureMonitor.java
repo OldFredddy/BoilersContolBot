@@ -1,10 +1,7 @@
-package org.example;
+package org.csbk;
 
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class TemperatureMonitor {
     private LinkedList<Double> temperatures;

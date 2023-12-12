@@ -1,4 +1,4 @@
-package org.example;
+package org.csbk;
 import com.intelligt.modbus.jlibmodbus.Modbus;
 import com.intelligt.modbus.jlibmodbus.data.ModbusHoldingRegisters;
 import com.intelligt.modbus.jlibmodbus.exception.ModbusIOException;
@@ -10,7 +10,6 @@ import com.intelligt.modbus.jlibmodbus.msg.request.ReadHoldingRegistersRequest;
 import com.intelligt.modbus.jlibmodbus.msg.request.WriteMultipleRegistersRequest;
 import com.intelligt.modbus.jlibmodbus.msg.response.ReadHoldingRegistersResponse;
 import com.intelligt.modbus.jlibmodbus.tcp.TcpParameters;
-import com.intelligt.modbus.jlibmodbus.utils.DataUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

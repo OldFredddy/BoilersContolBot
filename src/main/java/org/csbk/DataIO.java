@@ -1,4 +1,4 @@
-package org.example;
+package org.csbk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

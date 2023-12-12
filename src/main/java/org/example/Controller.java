@@ -464,7 +464,7 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     public void setTextField(String s){
         fieldTpod13.setText(s);
     }
-    private void startTimerRefreshDataForRest(){
+    private void startTimerRefreshDataForRest(){      //TODO restart service
         Timer timer = new Timer();
         TimerTask refreshDataTask = new TimerTask() {
             @Override

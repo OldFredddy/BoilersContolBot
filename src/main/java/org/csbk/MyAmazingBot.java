@@ -514,6 +514,9 @@ private boolean[] secondAttempt={false,false,false,false,false,false,false,false
         }
         checkForAvary=true;
     }
+    public void setAvary(int numberOfAvaryBoiler){
+        errorsArray[numberOfAvaryBoiler]=true;
+    }
     public void setCorrectForScada(int[] arrForCorrectScada) throws IOException {
         int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
         int correctIndex = -1;

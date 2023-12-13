@@ -254,9 +254,12 @@ public class Controller {
     private GudimBot botGudim;
     public AppData data;
     private String readDataMode;
+    Timer timerRefreshDataForRest;
+    Timer timerRestart;
 public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     public  ActualParams actualParamsForRest;
     public CopyOnWriteArrayList<Boiler> boilers;
+    BoilersHangMonitor boilersHangMonitor;
     @FXML
     void initialize() throws IIOException, TelegramApiException {
         try {
@@ -265,6 +268,7 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             for (int i = 0; i < 14; i++) {
                 boilers.add(new Boiler());
             }
+            boilersHangMonitor=new BoilersHangMonitor(boilers);
             //   ModbusServer modbusServer = new ModbusServer("192.168.6.190", 502, 1, 50,
                     //   1, 0, 1, 0, 125, 125, 0);
             //   modbusServer.startServer(this);
@@ -354,7 +358,8 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                 DataIO.saveData(data);
                 botBoilers = new MyAmazingBot(fixedTpod, fixedPpodHigh, fixedPpodLow, readDataMode, this);
                 botsApi.registerBot(botBoilers);
-                startTimerRefreshDataForRest();
+                restartRefreshData();
+
                 get("/params", (request, response) -> {
                     response.type("application/json");
                     return new Gson().toJsonTree(boilers);
@@ -464,7 +469,9 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         fieldTpod13.setText(s);
     }
     private void startTimerRefreshDataForRest(){      //TODO restart service
-        Timer timer = new Timer();
+        timerRefreshDataForRest=null;
+        System.gc();
+         timerRefreshDataForRest = new Timer();
         TimerTask refreshDataTask = new TimerTask() {
             @Override
             public void run() {
@@ -493,11 +500,28 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                         }
                         boilers.get(i).setCorrectionTpod(String.valueOf(correct));
                     }
+                    boilersHangMonitor.updateBoilers(boilers);
+                    if (boilersHangMonitor.getAvaryState()!=-1){
+                       botBoilers.setAvary(boilersHangMonitor.getAvaryState());
+                    }
                 } catch (IOException | NullPointerException | NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
         };
-        timer.scheduleAtFixedRate(refreshDataTask, 3  * 1000, 3  * 1000);
+        timerRefreshDataForRest.scheduleAtFixedRate(refreshDataTask, 3  * 1000, 3  * 1000);
+    }
+    private void restartRefreshData(){
+        timerRestart = new Timer();
+        TimerTask restartRefreshDataTask = new TimerTask() {
+            @Override
+            public void run() {
+               if (!timerRefreshDataForRest.equals(null)){
+                timerRefreshDataForRest.cancel();
+               }
+              startTimerRefreshDataForRest();
+            }
+        };
+        timerRestart.scheduleAtFixedRate(restartRefreshDataTask,   1000, 5 * 60 * 1000);
     }
 }

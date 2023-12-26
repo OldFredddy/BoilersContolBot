@@ -250,25 +250,19 @@ public class Controller {
     private float[] fixedParamsGudim ={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     private float[] fixedPpodHigh ={-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f};
     private float[] fixedPpodLow ={-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f,-1f};
-    private MyAmazingBot botBoilers;
-    private GudimBot botGudim;
     public AppData data;
     private String readDataMode;
     Timer timerRefreshDataForRest;
     Timer timerRestart;
 public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     public  ActualParams actualParamsForRest;
-    public CopyOnWriteArrayList<Boiler> boilers;
-    BoilersHangMonitor boilersHangMonitor;
+    public ArrayList<Boiler> boilers= new ArrayList<>();
+    public TemperatureCorrections temperatureCorrections = new TemperatureCorrections();
     @FXML
     void initialize() throws IIOException, TelegramApiException {
         try {
            data = new AppData();
-           boilers = new CopyOnWriteArrayList<>();
-            for (int i = 0; i < 14; i++) {
-                boilers.add(new Boiler());
-            }
-            boilersHangMonitor=new BoilersHangMonitor(boilers);
+
             //   ModbusServer modbusServer = new ModbusServer("192.168.6.190", 502, 1, 50,
                     //   1, 0, 1, 0, 125, 125, 0);
             //   modbusServer.startServer(this);
@@ -337,44 +331,43 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             fixedTpod[11]=Integer.parseInt(fieldTpod12.getText());    fixedPpodHigh[11]=Float.parseFloat(fieldPpod12High.getText());      fixedPpodLow[11]=Float.parseFloat(fieldPpod12Low.getText());
             fixedTpod[12]=Integer.parseInt(fieldTpod13.getText());    fixedPpodHigh[12]=Float.parseFloat(fieldPpod13High.getText());      fixedPpodLow[12]=Float.parseFloat(fieldPpod13Low.getText());
             fixedTpod[13]=Integer.parseInt(fieldTpod14.getText());    fixedPpodHigh[13]=Float.parseFloat(fieldPpod14High.getText());      fixedPpodLow[13]=Float.parseFloat(fieldPpod14Low.getText());
-            TelegramBotsApi botsApi = null;
-            try {
-                botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
-
             if(scadaImportCheck.isSelected()){
                 readDataMode="scadaImportTXT";
             } else
             {
                 readDataMode="modbusTCPIP";
             }
-
             try {
                 data.setTemperatures(fixedTpod);
                 data.setPpodHigh(fixedPpodHigh);
                 data.setPpodLow(fixedPpodLow);
                 DataIO.saveData(data);
-                botBoilers = new MyAmazingBot(fixedTpod, fixedPpodHigh, fixedPpodLow, readDataMode, this);
-                botsApi.registerBot(botBoilers);
+                temperatureCorrections.setTAlarmCorrectionFromUsers(data.getCorrectForScada());
                 restartRefreshData();
-
-                get("/params", (request, response) -> {
+                get("/getclientparams", (request, response) -> {
                     response.type("application/json");
+                    System.out.println("Send!");
                     return new Gson().toJsonTree(boilers);
                 });
-                post("/avaryreset", (request, response) -> {
-                    botBoilers.resetAvary();
+                get("/getclientparams", (request, response) -> {
                     response.type("application/json");
-                    return new Gson().toJson("Операция сброса выполнена");
+                    System.out.println("Send!");
+                    return new Gson().toJsonTree(boilers);
                 });
-                post("/correcttplan", (request, response) -> {
+                get("/getcorrect", (request, response) -> {
+                    response.type("application/json");
+                    System.out.println("Send2!");
+                    return new Gson().toJsonTree(temperatureCorrections);
+                });
+                post("/setclientparamstPod", (request, response) -> {
                     try {
                         String requestBody = request.body();
                         Gson gson = new Gson();
-                        int[] tempCorrectForScada = gson.fromJson(requestBody, int[].class);
-                        botBoilers.setCorrectForScada(tempCorrectForScada);
+                        String[] tempCorrectForScada = gson.fromJson(requestBody, String[].class);
+                        temperatureCorrections.setCorrectionTpod(tempCorrectForScada);
+                        data.setCorrectForScada(temperatureCorrections.getCorrectionTpod());
+                        DataIO.saveData(data);
+                        temperatureCorrections.changeTpod();
                         response.type("application/json");
                         return gson.toJson("Success");
                     } catch (JsonSyntaxException e) {
@@ -382,13 +375,14 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                         return new Gson().toJson("Invalid JSON format");
                     }
                 });
-                post("/correcttalarm", (request, response) -> {
+                post("/setclientparamstAlarm", (request, response) -> {
                     try {
                         String requestBody = request.body();
                         Gson gson = new Gson();
-                        int[] correctFromUsers = gson.fromJson(requestBody, int[].class);
-                        botBoilers.setCorrectFromUsers(correctFromUsers);
-                        correctFromUsers1=correctFromUsers;
+                        String[] tempCorrectFromUsers = gson.fromJson(requestBody, String[].class);
+                        for (int i = 0;i <tempCorrectFromUsers.length;i++){
+                            correctFromUsers1[i]= correctFromUsers1[i]+Integer.parseInt(tempCorrectFromUsers[i]);
+                        }
                         response.type("application/json");
                         return gson.toJson("Success");
                     } catch (JsonSyntaxException e) {
@@ -396,34 +390,15 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                         return new Gson().toJson("Invalid JSON format");
                     }
                 });
-            } catch (TelegramApiException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
         });
        stopButton.setOnAction(e->{
-           if (botBoilers != null) {
-               botBoilers.stop();
-               botBoilers = null;
-           }
+
        });
-        callButton.setOnAction(e->{
-            ZvonokPostService.call("+79140808817");
-        });
-        callRemoveButton.setOnAction(e->{
-            try {
-                ZvonokPostService.removeCallByPhoneNumber("+79140808817");
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        callInfoButton.setOnAction(e->{
-            try {
-                ZvonokPostService.checkStatus("+79140808817");
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+
         startButtonGudim.setOnAction(event ->{
             startButtonGudim.setDisable(true);
             if (fieldGoGHigh.getText().equals("")){ fieldGoGHigh.setText("-1");}             if (fieldGoGHigh.getText().equals("")){ fieldGoGHigh.setText("-1");}
@@ -450,19 +425,7 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             fixedParamsGudim[9]=Integer.parseInt(fieldTpodSk1GLow.getText());
             fixedParamsGudim[10]=Integer.parseInt(fieldTpodSk2GHigh.getText());
             fixedParamsGudim[11]=Integer.parseInt(fieldTpodSk2GLow.getText());
-            TelegramBotsApi botsApi2 = null;
-            try {
-                botsApi2 = new TelegramBotsApi(DefaultBotSession.class);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                botGudim = new GudimBot(fixedParamsGudim);
-                botsApi2.registerBot(botGudim);
 
-            } catch (TelegramApiException | IOException e) {
-                e.printStackTrace();
-            }
         });
     }
     public void setTextField(String s){
@@ -470,53 +433,49 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     }
     private void startTimerRefreshDataForRest(){      //TODO restart service
         timerRefreshDataForRest=null;
-        System.gc();
          timerRefreshDataForRest = new Timer();
         TimerTask refreshDataTask = new TimerTask() {
             @Override
             public void run() {
                 actualParamsForRest = null;
-                System.gc();
+                if (boilers.size()<1){
+                    boilers.clear();
+                    for (int i = 0; i < 14; i++) {
+
+                        boilers.add(new Boiler());
+                    }
+                }
                 try {
                     String currentDir = Paths.get("").toAbsolutePath().toString()+"/actualparams.txt";
                     actualParamsForRest = new ActualParams(currentDir,readDataMode, fixedPpodHigh, fixedPpodLow);
-                    for (int i = 0; i < 14; i++) {
-                        boilers.get(i).settPod(actualParamsForRest.getTPod()[i]);
-                        boilers.get(i).setpPod(actualParamsForRest.getPVx()[i]);
-                        boilers.get(i).settUlica(actualParamsForRest.getTStreet()[i]);
-                        boilers.get(i).settPlan(actualParamsForRest.gettPlan()[i]);
-                        boilers.get(i).settAlarm(actualParamsForRest.getAlarm(fixedTpod,botBoilers.getCorrectForScada(),i,correctFromUsers1));
-                        boolean ok = botBoilers.errorsArray[i];
-                        ok=!ok;
-                        boilers.get(i).setOk(ok);
-                        boilers.get(i).setImageResId(i);
-                        int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
-                        int[] boilerCorrectTable = botBoilers.getCorrectForScada();
-                        int correct = 0;
-                        for (int j = 0; j < boilerCompTable.length; j++) {
-                            if (boilerCompTable[j]==i){
-                                correct=boilerCorrectTable[j];
-                            }
-                        }
-                        boilers.get(i).setCorrectionTpod(String.valueOf(correct));
-                    }
-                    boilersHangMonitor.updateBoilers(boilers);
-                    if (boilersHangMonitor.getAvaryState()!=-1){
-                       botBoilers.setAvary(boilersHangMonitor.getAvaryState());
-                    }
+                   if (boilers.size()>0) {
+                       for (int i = 0; i < 14; i++) {
+                           boilers.get(i).setId(i);
+                           boilers.get(i).settPod(actualParamsForRest.getTPod()[i]);
+                           boilers.get(i).setpPod(actualParamsForRest.getPVx()[i]);
+                           boilers.get(i).settUlica(actualParamsForRest.getTStreet()[i]);
+                           boilers.get(i).settPlan(actualParamsForRest.gettPlan()[i]);
+                           boilers.get(i).settAlarm(actualParamsForRest.getAlarm(fixedTpod, temperatureCorrections.getCorrectionTpod(), i, correctFromUsers1));
+                           boilers.get(i).setOk(0);//TODO возможна ошибка из-за гонки IO //0-waiting 1 - good 2 - error
+                           boilers.get(i).setImageResId(i);
+                           boilers.get(i).setpPodHighFixed(String.valueOf(fixedPpodHigh[i]));
+                           boilers.get(i).setpPodLowFixed(String.valueOf(fixedPpodLow[i]));
+                           boilers.get(i).settPodFixed(String.valueOf(fixedTpod[i]));
+                       }
+                   }
                 } catch (IOException | NullPointerException | NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
         };
-        timerRefreshDataForRest.scheduleAtFixedRate(refreshDataTask, 3  * 1000, 3  * 1000);
+        timerRefreshDataForRest.scheduleAtFixedRate(refreshDataTask, 3  * 1000, 2  * 1000);
     }
     private void restartRefreshData(){
         timerRestart = new Timer();
         TimerTask restartRefreshDataTask = new TimerTask() {
             @Override
             public void run() {
-               if (!timerRefreshDataForRest.equals(null)){
+               if (timerRefreshDataForRest!=null){
                 timerRefreshDataForRest.cancel();
                }
               startTimerRefreshDataForRest();
@@ -524,4 +483,5 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         };
         timerRestart.scheduleAtFixedRate(restartRefreshDataTask,   1000, 5 * 60 * 1000);
     }
+
 }

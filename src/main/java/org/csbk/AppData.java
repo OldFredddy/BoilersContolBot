@@ -5,11 +5,11 @@ package org.csbk;
         private int[] pressures;
         private float[] ppodHigh;
         private float[] ppodLow;
-        private int[] correctForScada;
-        public int[] getCorrectForScada() {
+        private String[] correctForScada;
+        public String[] getCorrectForScada() {
             return correctForScada;
         }
-        public void setCorrectForScada(int[] correctForScada) {
+        public void setCorrectForScada(String[] correctForScada) {
             this.correctForScada = correctForScada;
         }
 

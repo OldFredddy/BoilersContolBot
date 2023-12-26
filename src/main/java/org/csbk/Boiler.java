@@ -1,12 +1,34 @@
 package org.csbk;
 
+
+
+
 public class Boiler {
+    private int isOk;
+    private String tPod;
+    private String pPod;
+    private String tUlica;
+    private String tPlan;
+    private String tAlarm;
+    private int imageResId;
+    private String pPodLowFixed;
+    private String pPodHighFixed;
+    private String tPodFixed;
+    private Integer id;
+    public int isOk() {
+        return isOk;
+    }
+
+    public void setOk(int ok) {
+        isOk = ok;
+    }
+
     public String gettPod() {
         return tPod;
     }
 
     public void settPod(String tPod) {
-        this.tPod = String.format("%.1f", Double.parseDouble(tPod)) +" °C";
+        this.tPod = tPod;
     }
 
     public String getpPod() {
@@ -14,11 +36,7 @@ public class Boiler {
     }
 
     public void setpPod(String pPod) {
-        if (pPod != null && pPod.length() >= 4) {
-            this.pPod = pPod.substring(0, 4)+ " МПа";
-        } else {
-            this.pPod = pPod+ " МПа"; // или присвойте какое-то другое значение по умолчанию
-        } ;
+        this.pPod = pPod;
     }
 
     public String gettUlica() {
@@ -26,8 +44,25 @@ public class Boiler {
     }
 
     public void settUlica(String tUlica) {
-        this.tUlica = String.format("%.1f", Double.parseDouble(tUlica)) + " °C";
+        this.tUlica = tUlica;
     }
+
+    public String gettPlan() {
+        return tPlan;
+    }
+
+    public void settPlan(String tPlan) {
+        this.tPlan = tPlan;
+    }
+
+    public String gettAlarm() {
+        return tAlarm;
+    }
+
+    public void settAlarm(String tAlarm) {
+        this.tAlarm = tAlarm;
+    }
+
     public int getImageResId() {
         return imageResId;
     }
@@ -36,47 +71,36 @@ public class Boiler {
         this.imageResId = imageResId;
     }
 
-    public boolean isOk() {
-        return isOk;
+    public String getpPodLowFixed() {
+        return pPodLowFixed;
     }
 
-    public void setOk(boolean ok) {
-        isOk = ok;
+    public void setpPodLowFixed(String pPodLowFixed) {
+        this.pPodLowFixed = pPodLowFixed;
     }
 
-    boolean isOk;
-    String tPod;
-    String pPod;
-    String tUlica;
-    String tPlan;
-    String tAlarm;
-    int imageResId;
-    String correctionTpod;
-
-    public String getCorrectionTpod() {
-        return correctionTpod;
+    public String getpPodHighFixed() {
+        return pPodHighFixed;
     }
 
-    public void setCorrectionTpod(String correctionTpod) {
-        this.correctionTpod = correctionTpod;
+    public void setpPodHighFixed(String pPodHighFixed) {
+        this.pPodHighFixed = pPodHighFixed;
     }
 
-
-
-    public String gettPlan() {
-        return tPlan;
+    public String gettPodFixed() {
+        return tPodFixed;
     }
 
-    public void settPlan(String tPlan) {
-        this.tPlan = "Контроллер: " + String.format("%.1f", Double.parseDouble(tPlan)) + " °C";
+    public void settPodFixed(String tPodFixed) {
+        this.tPodFixed = tPodFixed;
     }
 
-    public String gettAlarm() {
-        return tAlarm ;
+    public Integer getId() {
+        return id;
     }
 
-    public void settAlarm(String tAlarm) {
-        this.tAlarm = "Ср. т. аварии: " + String.format("%.1f", Double.parseDouble(tAlarm)) + " °C";
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 

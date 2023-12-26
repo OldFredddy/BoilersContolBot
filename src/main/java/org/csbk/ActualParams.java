@@ -23,7 +23,6 @@ public class ActualParams {
     private List<String> actualParametrs = new ArrayList<>();
     private List<String> actualTplan = new ArrayList<>();
 
-    // Конструктор
     public ActualParams(String path,String readDataMode, float[] customPvxHigh, float[] customPvxLow) throws IOException {
         this.path=path;
         for (int i = 0; i < normalPvxHigh.length; i++) {
@@ -45,7 +44,7 @@ public class ActualParams {
     public String[] getPVx() { return pVx; }
     public String[] getTStreet() { return tStreet; }
     public String getAlarm(int[] fixedTpod,
-                             int[] correctTplan,
+                             String[] correctTplan,
                              int numberOfBoiler,
                            int[] correctFromUsers){
         int[] boilerCompTable={0, 1, 2, 3, 7, 9, 10, 11};
@@ -58,7 +57,7 @@ public class ActualParams {
             }
             for (int j = 0; j < boilerCompTable.length; j++) {
                 if (boilerCompTable[j]==numberOfBoiler){
-                    correct=correctTplan[j];
+                    correct=Integer.parseInt(correctTplan[j]);
                 }
             }
             alarm[i]=String.valueOf(Float.parseFloat(alarm[i])-5+correct +correctFromUsers[numberOfBoiler]);

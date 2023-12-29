@@ -346,17 +346,14 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                 restartRefreshData();
                 get("/getclientparams", (request, response) -> {
                     response.type("application/json");
-                    System.out.println("Send!");
                     return new Gson().toJsonTree(boilers);
                 });
                 get("/getclientparams", (request, response) -> {
                     response.type("application/json");
-                    System.out.println("Send!");
                     return new Gson().toJsonTree(boilers);
                 });
                 get("/getcorrect", (request, response) -> {
                     response.type("application/json");
-                    System.out.println("Send2!");
                     return new Gson().toJsonTree(temperatureCorrections);
                 });
                 post("/setclientparamstPod", (request, response) -> {
@@ -433,11 +430,13 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     }
     private void startTimerRefreshDataForRest(){      //TODO restart service
         timerRefreshDataForRest=null;
+        System.gc();
          timerRefreshDataForRest = new Timer();
         TimerTask refreshDataTask = new TimerTask() {
             @Override
             public void run() {
                 actualParamsForRest = null;
+                System.gc();
                 if (boilers.size()<1){
                     boilers.clear();
                     for (int i = 0; i < 14; i++) {
@@ -461,6 +460,7 @@ public int[] correctFromUsers1={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                            boilers.get(i).setpPodHighFixed(String.valueOf(fixedPpodHigh[i]));
                            boilers.get(i).setpPodLowFixed(String.valueOf(fixedPpodLow[i]));
                            boilers.get(i).settPodFixed(String.valueOf(fixedTpod[i]));
+                           boilers.get(i).setVersion(1);
                        }
                    }
                 } catch (IOException | NullPointerException | NumberFormatException e) {
